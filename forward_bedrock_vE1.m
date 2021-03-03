@@ -1,4 +1,4 @@
-function [gm,time,burial] = forward_bedrockvJ2(up,model,CNprop)
+function [gm,time,burial] = forward_bedrockvJ2(up,model,CNprop,numdp)
 
 % function [gm] = forward_bedrock(up,models)
 %
@@ -50,38 +50,70 @@ for i=1:model.Nsnr
     
     n0 = (i-1)*model.Nsmp+model.Mmp; %parameter number start
     
-    z1 = up(n0+1);
-    dT2 = up(n0+2); %Myr
-    dz2 = 10^up(n0+3); %m
-    dT3 = up(n0+4);
-    dz3 = 10^up(n0+5); %m
-    dT4 = up(n0+6); %Myr
-    dz4 = 10^up(n0+7); %m
-    E5 = 10^up(n0+6); %m/Myr
-    
-    T2 = T1 + dT2;
-    z2 = z1 + dz2;
-    
-    T3 = T2 + dT3;
-    z3 = z2 + dz3;
-    
-    T4 = T3 + dT4;
-    z4 = z3 + dz4;
-    
-    T5 = model.age; %this requires age > Tdg+dT2+dT3+dT4
-    z5 = z4 + (model.age - T4)*E5;
-    
-    mT = [0,T1,T2,T3,T4,T5]*1e6; %Myr to yr
-    mz = [0,z1,z2,z3,z4,z5];
-    
-    % Check starting condition of model
-    if (z5 > model.z0); % Depth at start of model greater than max depth
-        maxtime = interp1(mz,mT,model.z0);
-        ssbc = 0;
-    else
-        maxtime = model.age*1e6;
-        ssbc = 1;
-    end;
+    switch numdp
+        case 3
+            z1 = up(n0+1);
+            dT2 = up(n0+2); %Myr
+            dz2 = 10^up(n0+3); %m
+            dT3 = up(n0+4);
+            dz3 = 10^up(n0+5); %m
+            E4 = 10^up(n0+6); %m/Myr
+            
+            T2 = T1 + dT2;
+            z2 = z1 + dz2;
+            
+            T3 = T2 + dT3;
+            z3 = z2 + dz3;
+            
+            
+            T4 = model.age; %this requires age > Tdg+dT2+dT3
+            z4 = z3 + (model.age - T3)*E4;
+            
+            mT = [0,T1,T2,T3,T4]*1e6; %Myr to yr
+            mz = [0,z1,z2,z3,z4];
+            
+            % Check starting condition of model
+            if (z4 > model.z0); % Depth at start of model greater than max depth
+                maxtime = interp1(mz,mT,model.z0);
+                ssbc = 0;
+            else
+                maxtime = model.age*1e6;
+                ssbc = 1;
+            end;
+        case 4
+            z1 = up(n0+1);
+            dT2 = up(n0+2); %Myr
+            dz2 = 10^up(n0+3); %m
+            dT3 = up(n0+4);
+            dz3 = 10^up(n0+5); %m
+            dT4 = up(n0+6); %Myr
+            dz4 = 10^up(n0+7); %m
+            E5 = 10^up(n0+8); %m/Myr
+            
+            T2 = T1 + dT2;
+            z2 = z1 + dz2;
+            
+            T3 = T2 + dT3;
+            z3 = z2 + dz3;
+            
+            T4 = T3 + dT4;
+            z4 = z3 + dz4;
+            
+            T5 = model.age; %this requires age > Tdg+dT2+dT3+dT4
+            z5 = z4 + (model.age - T4)*E5;
+            
+            mT = [0,T1,T2,T3,T4,T5]*1e6; %Myr to yr
+            mz = [0,z1,z2,z3,z4,z5];
+            
+            % Check starting condition of model
+            if (z5 > model.z0); % Depth at start of model greater than max depth
+                maxtime = interp1(mz,mT,model.z0);
+                ssbc = 0;
+            else
+                maxtime = model.age*1e6;
+                ssbc = 1;
+            end;
+    end
     
     nt = ceil(maxtime/model.dt);
     time = maxtime*linspace(0,1,nt);
@@ -151,7 +183,7 @@ for i=1:model.Nsnr
     
     N10 = zeros(Ndp,nt); % changed '1' to 'Ndp'
     N26 = zeros(Ndp,nt); % --
-
+    
     
     if (ssbc == 0) %depth of sample at model start greater than maxdepth
         

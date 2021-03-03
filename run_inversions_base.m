@@ -5,6 +5,7 @@ load fsamples.mat
 %proposed standard setting: 4 walkers, 40k accepted models, 4k accepted models burnin.
 %(maybe max 500k proposed models).
 snr = 1; %number of samples from same excel file.
+numdp = 4; %including glaciation time and depth, right now only made for 3 or 4
 
 nwalkers = 16; %number of walkers
 nmodmax = 1000e4; %max number of proposed models
@@ -14,7 +15,6 @@ k_meanlength = 100; %default: 100
 
 %for manual Tdglac
 Tdglac = 0.0103;
-%temp = 1.0;
 acctarget = 0.30; %default: 0.3
 
 starttime = datetime('now');
@@ -42,8 +42,8 @@ for i = 1:1 %length(fsamples.IDs)
     savepath = ['models/' foldprefix starttimestr '/' sampleID '.mat'];
     reportpath = ['models/' foldprefix starttimestr '/reports/' sampleID '/'];
     mkdir (reportpath);
-    bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget) %use vE1 or E2
-    makereportEv2(snr,savepath,reportpath,sampleID)
+    bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp) %use vE1 or E2
+    makereportEv2(snr,savepath,reportpath,sampleID,numdp)
 end
 
 

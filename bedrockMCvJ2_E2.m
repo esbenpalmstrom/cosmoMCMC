@@ -1,4 +1,4 @@
-function bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget)
+function bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp)
 %MCMC model modified from bedrockMCv7 (DLE) by JLA, June 2019
 %
 % vJ2 updated Feb. 2020 by JLA includes the possibility of extra data points at depth
@@ -79,40 +79,59 @@ end
 
 %loop number of samples and for model parameters
 for i=1:model.Nsnr
-    model.mp{model.Mmp+(i-1)*model.Nsmp+1}.name =  ['Z at Tdg, sample ',num2str(i)];
-    model.mp{model.Mmp+(i-1)*model.Nsmp+1}.vmin = 0;
-    model.mp{model.Mmp+(i-1)*model.Nsmp+1}.vmax = 0.05; %m
-    model.mp{model.Mmp+(i-1)*model.Nsmp+2}.name =  ['dT2, sample ',num2str(i)];
-    model.mp{model.Mmp+(i-1)*model.Nsmp+2}.vmin = 0;
-    model.mp{model.Mmp+(i-1)*model.Nsmp+2}.vmax = model.tc; %Myr
-    model.mp{model.Mmp+(i-1)*model.Nsmp+3}.name =  ['dz2, sample ',num2str(i)];
-    model.mp{model.Mmp+(i-1)*model.Nsmp+3}.vmin = -1; %0.1 m
-    model.mp{model.Mmp+(i-1)*model.Nsmp+3}.vmax = 1.0; %1; %log 10 m
-    model.mp{model.Mmp+(i-1)*model.Nsmp+4}.name =  ['dT3, sample ',num2str(i)];
-    model.mp{model.Mmp+(i-1)*model.Nsmp+4}.vmin = 0;
-    model.mp{model.Mmp+(i-1)*model.Nsmp+4}.vmax = model.tc; %Myr
-    model.mp{model.Mmp+(i-1)*model.Nsmp+5}.name =  ['dz3, sample ',num2str(i)];
-    model.mp{model.Mmp+(i-1)*model.Nsmp+5}.vmin = -1;%0.1 m
-    model.mp{model.Mmp+(i-1)*model.Nsmp+5}.vmax = 1.0;%1;%log 10 m
-%     model.mp{model.Mmp+(i-1)*model.Nsmp+6}.name =  ['E4, sample ',num2str(i)];
-%     model.mp{model.Mmp+(i-1)*model.Nsmp+6}.vmin = -2; %log10 -2 =0.01m/Myr
-%     model.mp{model.Mmp+(i-1)*model.Nsmp+6}.vmax = 2; %2=100 m/Myr
     
-    %insert more model depths here
-    model.mp{model.Mmp+(i-1)*model.Nsmp+6}.name =  ['dT4, sample ',num2str(i)];
-    model.mp{model.Mmp+(i-1)*model.Nsmp+6}.vmin = 0;
-    model.mp{model.Mmp+(i-1)*model.Nsmp+6}.vmax = model.tc;
-    model.mp{model.Mmp+(i-1)*model.Nsmp+7}.name =  ['dz4, sample ',num2str(i)];
-    model.mp{model.Mmp+(i-1)*model.Nsmp+7}.vmin = -1; %log10 -2 =0.01m/Myr
-    model.mp{model.Mmp+(i-1)*model.Nsmp+7}.vmax = 1.0; %2=100 m/Myr
-    
-    model.mp{model.Mmp+(i-1)*model.Nsmp+8}.name =  ['E5, sample ',num2str(i)];
-    model.mp{model.Mmp+(i-1)*model.Nsmp+8}.vmin = -2; %log10 -2 =0.01m/Myr
-    model.mp{model.Mmp+(i-1)*model.Nsmp+8}.vmax = 2; %2=100 m/Myr
-    
-    %add sample info to models
-    model.data{i} = sample{snr(i)};
-    
+    switch numdp
+        case 3
+            model.mp{model.Mmp+(i-1)*model.Nsmp+1}.name =  ['Z at Tdg, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+1}.vmin = 0;
+            model.mp{model.Mmp+(i-1)*model.Nsmp+1}.vmax = 0.05; %m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+2}.name =  ['dT2, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+2}.vmin = 0;
+            model.mp{model.Mmp+(i-1)*model.Nsmp+2}.vmax = model.tc; %Myr
+            model.mp{model.Mmp+(i-1)*model.Nsmp+3}.name =  ['dz2, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+3}.vmin = -1; %0.1 m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+3}.vmax = 1.0; %1; %log 10 m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+4}.name =  ['dT3, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+4}.vmin = 0;
+            model.mp{model.Mmp+(i-1)*model.Nsmp+4}.vmax = model.tc; %Myr
+            model.mp{model.Mmp+(i-1)*model.Nsmp+5}.name =  ['dz3, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+5}.vmin = -1;%0.1 m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+5}.vmax = 1.0;%1;%log 10 m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+6}.name =  ['E4, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+6}.vmin = -2; %log10 -2 =0.01m/Myr
+            model.mp{model.Mmp+(i-1)*model.Nsmp+6}.vmax = 2; %2=100 m/Myr
+            
+            %add sample info to models
+            model.data{i} = sample{snr(i)};
+        case 4
+            model.mp{model.Mmp+(i-1)*model.Nsmp+1}.name =  ['Z at Tdg, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+1}.vmin = 0;
+            model.mp{model.Mmp+(i-1)*model.Nsmp+1}.vmax = 0.05; %m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+2}.name =  ['dT2, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+2}.vmin = 0;
+            model.mp{model.Mmp+(i-1)*model.Nsmp+2}.vmax = model.tc; %Myr
+            model.mp{model.Mmp+(i-1)*model.Nsmp+3}.name =  ['dz2, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+3}.vmin = -1; %0.1 m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+3}.vmax = 1.0; %1; %log 10 m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+4}.name =  ['dT3, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+4}.vmin = 0;
+            model.mp{model.Mmp+(i-1)*model.Nsmp+4}.vmax = model.tc; %Myr
+            model.mp{model.Mmp+(i-1)*model.Nsmp+5}.name =  ['dz3, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+5}.vmin = -1;%0.1 m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+5}.vmax = 1.0;%1;%log 10 m
+            model.mp{model.Mmp+(i-1)*model.Nsmp+6}.name =  ['dT4, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+6}.vmin = 0;
+            model.mp{model.Mmp+(i-1)*model.Nsmp+6}.vmax = model.tc;
+            model.mp{model.Mmp+(i-1)*model.Nsmp+7}.name =  ['dz4, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+7}.vmin = -1; %log10 -2 =0.01m/Myr
+            model.mp{model.Mmp+(i-1)*model.Nsmp+7}.vmax = 1.0; %2=100 m/Myr
+            model.mp{model.Mmp+(i-1)*model.Nsmp+8}.name =  ['E5, sample ',num2str(i)];
+            model.mp{model.Mmp+(i-1)*model.Nsmp+8}.vmin = -2; %log10 -2 =0.01m/Myr
+            model.mp{model.Mmp+(i-1)*model.Nsmp+8}.vmax = 2; %2=100 m/Myr
+            
+            %add sample info to models
+            model.data{i} = sample{snr(i)};
+    end
 end
 
 %save some general MCMC parameters
@@ -165,16 +184,13 @@ elseif model.Nnc == 1
     end
 end
 
-
 Cobs = model.Temp*diag(sigd.^2);
 Cobsinv = inv(Cobs);
-
 
 %%%%%% Initiate random models generation %%%%%%%
 
 %Initialize random sequence
 rng('default');
-
 
 %walker starting points
 if model.Nwalk > 1
@@ -185,55 +201,63 @@ else
     wini = randi([0,4],model.Nmp,model.Nwalk)/4;
 end
 
-
 %wini(:,1) = 0.5;
 %wini(1,:) = 1;
 %wini(4,:) = 0;
 
-
-
 %loop walkers
 for nw = 1:model.Nwalk
-    
     %walker starting point - for initial parameter vector
-    
     for i = 1:model.Nmp
         u(i) = (1-wini(i,nw))*model.mp{i}.vmin + wini(i,nw)*model.mp{i}.vmax;
     end
     
-    Tdg = u(2);
-    dT2 = u(4);
-    dT3 = u(6);
-    dT4 = u(8);
-    
-    %T4 = Tdg+dT2+dT3;
-    T5 = Tdg + dT2 + dT3 + dT4;
-    
-    
-    
-    
-    while T5 > model.age %Only use the starting model, if the total age doesnt exceed model.age
-        
-        if model.Nwalk > 1
-            for i=1:model.Nmp
-                wini(i,:) = 0.8*(randperm(model.Nwalk)-1)/(model.Nwalk-1)+0.1;
+    switch numdp
+        case 3
+            Tdg = u(2);
+            dT2 = u(4);
+            dT3 = u(6);
+            T4 = Tdg+dT2+dT3;
+            while T4 > model.age %Only use the starting model, if the total age doesnt exceed model.age
+                if model.Nwalk > 1
+                    for i=1:model.Nmp
+                        wini(i,:) = 0.8*(randperm(model.Nwalk)-1)/(model.Nwalk-1)+0.1;
+                    end
+                else
+                    wini = randi([0,4],model.Nmp,model.Nwalk)/4;
+                end
+                for i = 1:model.Nmp
+                    u(i) = (1-wini(i,nw))*model.mp{i}.vmin + wini(i,nw)*model.mp{i}.vmax;
+                end
+                Tdg = u(2);
+                dT2 = u(4);
+                dT3 = u(6);
+                T4 = Tdg + dT2 + dT3;
             end
-        else
-            wini = randi([0,4],model.Nmp,model.Nwalk)/4;
-        end
-        
-        for i = 1:model.Nmp
-            u(i) = (1-wini(i,nw))*model.mp{i}.vmin + wini(i,nw)*model.mp{i}.vmax;
-        end
-        
-        Tdg = u(2);
-        dT2 = u(4);
-        dT3 = u(6);
-        dT4 = u(8);
-        T5 = Tdg + dT2 + dT3 + dT4;
-        
+        case 4
+            Tdg = u(2);
+            dT2 = u(4);
+            dT3 = u(6);
+            dT4 = u(8);
+            T5 = Tdg + dT2 + dT3 + dT4;
+            while T5 > model.age %Only use the starting model, if the total age doesnt exceed model.age
+                if model.Nwalk > 1
+                    for i=1:model.Nmp
+                        wini(i,:) = 0.8*(randperm(model.Nwalk)-1)/(model.Nwalk-1)+0.1;
+                    end
+                else
+                    wini = randi([0,4],model.Nmp,model.Nwalk)/4;
+                end
+                for i = 1:model.Nmp
+                    u(i) = (1-wini(i,nw))*model.mp{i}.vmin + wini(i,nw)*model.mp{i}.vmax;
+                end
+                Tdg = u(2);
+                dT2 = u(4);
+                dT3 = u(6);
+                dT4 = u(8);
+                T5 = Tdg + dT2 + dT3 + dT4;
+            end
     end
-    
     
     %initialize
     minres = 1e20; %not used
@@ -277,9 +301,9 @@ for nw = 1:model.Nwalk
         if (mi > k_meanlength)
             accrat = (sum(abs(status((mi-k_meanlength):(mi-1))))+1)/k_meanlength;
         elseif (bcount < model.burnin)
-            accrat = 0.1; %target acceptance ratio during burnin /ELP: not true? see below
+            accrat = 0.1; %target acceptance ratio during burnin /ELP: not used? see below
         else %it never enters this part of the loop?
-            accrat = 0.30; %target acceptance ratio for the inversion /ELP: not true? see below
+            accrat = 0.30; %target acceptance ratio for the inversion /ELP: not used? see below
         end
         
 %         if (mi > 100)
@@ -298,8 +322,6 @@ for nw = 1:model.Nwalk
             if ((mi > 100)&&(bcount < 2)) k = 1.0;
             elseif ((mi > 10)&&(bcount < 2)) k = 0.01*mi;
             end
-            
-            
             
         elseif (bcount < model.burnin)
             
@@ -342,33 +364,38 @@ for nw = 1:model.Nwalk
         
         
         %retake if model age and depth limits are exceeded
-        while (any(up(:) < umin(:))||any(up(:) > umax(:))||((up(2)+up(4)+up(6)+up(8))>model.age) ) %added final clause to make sure time intervals dont exceed model.age
-            
-            %random step
-            du = 0.5*randn(model.Nmp,1).*du0(:);
-            
-            %proposed model
-            up = u(:) + k*du(:);
-            
+        switch numdp
+            case 3
+                while (any(up(:) < umin(:))||any(up(:) > umax(:))||((up(2)+up(4)+up(6))>model.age) ) %added final clause to make sure time intervals dont exceed model.age
+                    
+                    %random step
+                    du = 0.5*randn(model.Nmp,1).*du0(:);
+                    
+                    %proposed model
+                    up = u(:) + k*du(:);
+                    
+                end
+            case 4
+                while (any(up(:) < umin(:))||any(up(:) > umax(:))||((up(2)+up(4)+up(6)+up(8))>model.age) ) %added final clause to make sure time intervals dont exceed model.age
+                    
+                    %random step
+                    du = 0.5*randn(model.Nmp,1).*du0(:);
+                    
+                    %proposed model
+                    up = u(:) + k*du(:);
+                    
+                end
         end
         
-
-        
-
-        
-        
         %********** Forward model *****************
-        [gmp,time,burial] = forward_bedrockvJ2(up,model,CNprop); %gmp: predicted data vector.
-        
+        [gmp,time,burial] = forward_bedrock_vE1(up,model,CNprop,numdp); %gmp: predicted data vector.
         
         gmp = gmp(1:model.Nds);
-        
         
         %Acceptance criteria
         restot = (dobs(:)-gmp(:))'*Cobsinv*(dobs(:)-gmp(:));
         rfrac = exp(-0.5*restot)/exp(-0.5*res_current);
         alpha = rand(1);
-        
         
         %if model is accepted
         if ((alpha < rfrac)||(mi == 1))

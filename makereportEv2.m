@@ -1,4 +1,4 @@
-function makereportEv2(snr,savepath,reportpath,sampleID)
+function makereportEv2(snr,savepath,reportpath,sampleID,numdp)
 %{
 %based on makereportJv2.m
 %input: snr,savepath,reportpath,sampleID
@@ -323,40 +323,74 @@ for ns = 1:model.Nsnr
         I = find(model.walker{nw}.status == 1);
         for i=1:length(I)
             
-            T1 = model.walker{nw}.u(2,I(i));
-            z1 = model.walker{nw}.u(n0+1,I(i));
-            dT2 = model.walker{nw}.u(n0+2,I(i));
-            dz2 = 10^model.walker{nw}.u(n0+3,I(i));
-            dT3 = model.walker{nw}.u(n0+4,I(i));
-            dz3 = 10^model.walker{nw}.u(n0+5,I(i));
-            dT4 = model.walker{nw}.u(n0+6,I(i));
-            dz4 = 10^model.walker{nw}.u(n0+7,I(i));
-            E5 = 10^model.walker{nw}.u(n0+8,I(i));
-            
-            
-            T2 = T1 + dT2;
-            z2 = z1 + dz2;
-            T3 = T2 + dT3;
-            z3 = z2 + dz3;
-            T4 = T3 + dT4; %this requires age > Tdg+dT2+dT3
-            z4 = z3 + dz4; %hvis T3 bliver større end model.age kan der opstå problemer
-            z5 = z4 + (model.age - T4)*E5;
-            T5 = model.age;
-            if z5 < 0 %test if problems occur.
-                error('error: some models are not being properly exhumed')
-            end
-            
-            Tm = [0,T1,T2,T3,T4,T5];
-            zm = [0,z1,z2,z3,z4,z5];
-            
-            zinterp = interp1(Tm,zm,tint,'linear',2*z0);
-            izs = 1+floor(zinterp/dzi); %bin index at each itsfine
-            for itsfine=1:Nt
-                if (izs(itsfine)<=Nz && izs(itsfine)>0) %JLA added second clause 11.03.20(quickfix)
-                    histgrid(izs(itsfine),itsfine)=histgrid(izs(itsfine),itsfine)+ 1;
-                end
+            switch numdp
+                case 3
+                    T1 = model.walker{nw}.u(2,I(i));
+                    z1 = model.walker{nw}.u(n0+1,I(i));
+                    dT2 = model.walker{nw}.u(n0+2,I(i));
+                    dz2 = 10^model.walker{nw}.u(n0+3,I(i));
+                    dT3 = model.walker{nw}.u(n0+4,I(i));
+                    dz3 = 10^model.walker{nw}.u(n0+5,I(i));
+                    E4 = 10^model.walker{nw}.u(n0+6,I(i));
+                    
+                    T2 = T1 + dT2;
+                    z2 = z1 + dz2;
+                    T3 = T2 + dT3;
+                    z3 = z2 + dz3;
+                    T4 = model.age; %this requires age > Tdg+dT2+dT3
+                    z4 = z3 + (model.age - T3)*E4; %hvis T3 bliver større end model.age kan der opstå problemer
+                    if z4 < 0 %test if problems occur.
+                        error('error: some models are not being properly exhumed')
+                    end
+                    
+                    Tm = [0,T1,T2,T3,T4];
+                    zm = [0,z1,z2,z3,z4];
+                    
+                    zinterp = interp1(Tm,zm,tint,'linear',2*z0);
+                    izs = 1+floor(zinterp/dzi); %bin index at each itsfine
+                    for itsfine=1:Nt
+                        if (izs(itsfine)<=Nz && izs(itsfine)>0) %JLA added second clause 11.03.20(quickfix)
+                            histgrid(izs(itsfine),itsfine)=histgrid(izs(itsfine),itsfine)+ 1;
+                        end
+                    end
+                    
+                case 4
+                    T1 = model.walker{nw}.u(2,I(i));
+                    z1 = model.walker{nw}.u(n0+1,I(i));
+                    dT2 = model.walker{nw}.u(n0+2,I(i));
+                    dz2 = 10^model.walker{nw}.u(n0+3,I(i));
+                    dT3 = model.walker{nw}.u(n0+4,I(i));
+                    dz3 = 10^model.walker{nw}.u(n0+5,I(i));
+                    dT4 = model.walker{nw}.u(n0+6,I(i));
+                    dz4 = 10^model.walker{nw}.u(n0+7,I(i));
+                    E5 = 10^model.walker{nw}.u(n0+8,I(i));
+                    
+                    
+                    T2 = T1 + dT2;
+                    z2 = z1 + dz2;
+                    T3 = T2 + dT3;
+                    z3 = z2 + dz3;
+                    T4 = T3 + dT4; %this requires age > Tdg+dT2+dT3
+                    z4 = z3 + dz4; %hvis T3 bliver større end model.age kan der opstå problemer
+                    z5 = z4 + (model.age - T4)*E5;
+                    T5 = model.age;
+                    if z5 < 0 %test if problems occur.
+                        error('error: some models are not being properly exhumed')
+                    end
+                    
+                    Tm = [0,T1,T2,T3,T4,T5];
+                    zm = [0,z1,z2,z3,z4,z5];
+                    
+                    zinterp = interp1(Tm,zm,tint,'linear',2*z0);
+                    izs = 1+floor(zinterp/dzi); %bin index at each itsfine
+                    for itsfine=1:Nt
+                        if (izs(itsfine)<=Nz && izs(itsfine)>0) %JLA added second clause 11.03.20(quickfix)
+                            histgrid(izs(itsfine),itsfine)=histgrid(izs(itsfine),itsfine)+ 1;
+                        end
+                    end
             end
         end
+        
     end
     
     [C,h] = contourf(tbin,zbin,(histgrid+0.5).^0.25,50, ...
@@ -369,13 +403,11 @@ if isfield(model,'synpmval') == 1
 end
 ylim([0 20]) %make variable depending on total erosion?
 
-
 mname = strcat(reportpath,sampleID,'.pdf');
 
 print(mname,'-dpdf','-fillpage');
 append_pdfs(mname, 'temp2.pdf', 'temp3.pdf')
 delete('temp2.pdf','temp3.pdf')
-
 
 set(groot','defaulttextinterpreter','default');
 set(groot, 'defaultAxesTickLabelInterpreter','default');
