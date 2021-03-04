@@ -1,4 +1,4 @@
-function bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp)
+function bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp,CNprod)
 %MCMC model modified from bedrockMCv7 (DLE) by JLA, June 2019
 %
 % vJ2 updated Feb. 2020 by JLA includes the possibility of extra data points at depth
@@ -15,6 +15,16 @@ late october: changed 'obs' and 'sigd' calcuation to be dependent on number
 of nuclides. 1 nuclide assumes Be.
 
 added input parameters in order to make compatible with run_inversions.m
+
+
+todo:
+Make a switch for choosing between old and new muon production scheme. This
+should happen in the forward model function, forward_bedrock_vE1.m
+
+parallelize the workflow
+
+
+
 %}
 
 load fsamples.mat
@@ -388,7 +398,7 @@ for nw = 1:model.Nwalk
         end
         
         %********** Forward model *****************
-        [gmp,time,burial] = forward_bedrock_vE1(up,model,CNprop,numdp); %gmp: predicted data vector.
+        [gmp,time,burial] = forward_bedrock_vE1(up,model,CNprop,numdp,CNprod); %gmp: predicted data vector.
         
         gmp = gmp(1:model.Nds);
         

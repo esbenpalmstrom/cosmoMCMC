@@ -1,5 +1,4 @@
-function [gm,time,burial] = forward_bedrockvJ2(up,model,CNprop,numdp)
-
+function [gm,time,burial] = forward_bedrock_vE1(up,model,CNprop,numdp,CNprod)
 % function [gm] = forward_bedrock(up,models)
 %
 % Forward model for transient CN integration
@@ -10,10 +9,12 @@ function [gm,time,burial] = forward_bedrockvJ2(up,model,CNprop,numdp)
 % integrated solution in-stead of using midpoint - no noticeable difference
 %
 % vJ2 updated Feb. 2020 by JLA includes the possibility of extra data points at depth
-
 % up = model parameter vector
 % gm = predicted data vector
 % CNprop = Cosmogenic Nuclide properties
+% numdp = number of depth points in the geological model, currently 3 or 4
+% are possible
+% CNprod = method of CN production, 'old' or 'new'
 
 %model parameters
 
@@ -73,13 +74,13 @@ for i=1:model.Nsnr
             mz = [0,z1,z2,z3,z4];
             
             % Check starting condition of model
-            if (z4 > model.z0); % Depth at start of model greater than max depth
+            if (z4 > model.z0) % Depth at start of model greater than max depth
                 maxtime = interp1(mz,mT,model.z0);
                 ssbc = 0;
             else
                 maxtime = model.age*1e6;
                 ssbc = 1;
-            end;
+            end
         case 4
             z1 = up(n0+1);
             dT2 = up(n0+2); %Myr
@@ -106,13 +107,13 @@ for i=1:model.Nsnr
             mz = [0,z1,z2,z3,z4,z5];
             
             % Check starting condition of model
-            if (z5 > model.z0); % Depth at start of model greater than max depth
+            if (z5 > model.z0) % Depth at start of model greater than max depth
                 maxtime = interp1(mz,mT,model.z0);
                 ssbc = 0;
             else
                 maxtime = model.age*1e6;
                 ssbc = 1;
-            end;
+            end
     end
     
     nt = ceil(maxtime/model.dt);
@@ -145,41 +146,50 @@ for i=1:model.Nsnr
     
     dOn = interp1(dOt,dO,time,'linear',dO(end)); %d18O values at 'time'
     pfac = ones(nt,1); %controls exposure, modified below
-    I = find(dOn > d18Op); pfac(I) = 0; %No exposure when d18O
+%     I = find(dOn > d18Op); pfac(I) = 0; %No exposure when d18O
+    I = dOn > d18Op; pfac(I) = 0; %No exposure when d18O
     %values above threshold (d18Op)
-    I = find(time < 25e3); pfac(I) = 0; %correct exposure around
+%     I = find(time < 25e3); pfac(I) = 0; %correct exposure around
+    I = time < 25e3; pfac(I) = 0; %correct exposure around
     %deglaciation, set no
     %exposure last 25 kyr
-    I = find(time < T1*1e6); pfac(I) = 1; %then add exposure from
+%     I = find(time < T1*1e6); pfac(I) = 1; %then add exposure from
+    I = time < T1*1e6; pfac(I) = 1; %then add exposure from
     %time of deglaciation
     
     
-    %CN production
-    %     P10spal = model.data{i}.P10spal;
-    %     P10tot = model.data{i}.P10spal + model.data{i}.P10muon;
-    %     P10fm = CNprop.pr_fm_Be*P10tot;
-    %     P10nmc = CNprop.pr_nmc_Be*P10tot;
-    %     P26spal = model.data{i}.P26spal;
-    %     P26tot = model.data{i}.P26spal + model.data{i}.P26muon;
-    %     P26fm = CNprop.pr_fm_Al*P26tot;
-    %     P26nmc = CNprop.pr_nmc_Al*P26tot;
+    %*****CN production*****
     
-    rho = model.data{i}.density;
-    Lspal = model.data{i}.production.Lspal;
-    
-    P10spal = model.data{i}.production.P10spal;
-    P10fm = model.data{i}.production.P10_fm;
-    P10Lfm = model.data{i}.production.P10_Lfm;
-    P10nmc = model.data{i}.production.P10_nmc;
-    P10Lnmc = model.data{i}.production.P10_Lnmc;
-    
-    
-    P26spal = model.data{i}.production.P26spal;
-    P26fm = model.data{i}.production.P26_fm;
-    P26Lfm = model.data{i}.production.P26_Lfm;
-    P26nmc = model.data{i}.production.P26_nmc;
-    P26Lnmc = model.data{i}.production.P26_Lnmc;
-    
+    switch CNprod
+        case 'old'
+            P10spal = model.data{i}.P10spal;
+            P10tot = model.data{i}.P10spal + model.data{i}.P10muon;
+            P10fm = CNprop.pr_fm_Be*P10tot;
+            P10nmc = CNprop.pr_nmc_Be*P10tot;
+            
+            P26spal = model.data{i}.P26spal;
+            P26tot = model.data{i}.P26spal + model.data{i}.P26muon;
+            P26fm = CNprop.pr_fm_Al*P26tot;
+            P26nmc = CNprop.pr_nmc_Al*P26tot;
+            
+            
+        case 'new'
+            rho = model.data{i}.density;
+            Lspal = model.data{i}.production.Lspal;
+            
+            P10spal = model.data{i}.production.P10spal;
+            P10fm = model.data{i}.production.P10_fm;
+            P10Lfm = model.data{i}.production.P10_Lfm;
+            P10nmc = model.data{i}.production.P10_nmc;
+            P10Lnmc = model.data{i}.production.P10_Lnmc;
+            
+            
+            P26spal = model.data{i}.production.P26spal;
+            P26fm = model.data{i}.production.P26_fm;
+            P26Lfm = model.data{i}.production.P26_Lfm;
+            P26nmc = model.data{i}.production.P26_nmc;
+            P26Lnmc = model.data{i}.production.P26_Lnmc;
+    end
     
     N10 = zeros(Ndp,nt); % changed '1' to 'Ndp'
     N26 = zeros(Ndp,nt); % --
@@ -191,25 +201,47 @@ for i=1:model.Nsnr
         N26(:,nt) = 0.0; % --
         
     else
+        
         %assume steady state concentration at starting point
         
-        erate = E5*1e-6;
-        %spallation
-        fBe = CNprop.lambda_Be + rho*erate*100/Lspal;
-        fAl = CNprop.lambda_Al + rho*erate*100/Lspal;
-        N10(:,nt) = P10spal*exp(-rho*100*burial(:,nt)/Lspal)/fBe; % changed '(nt)' to '(:,nt)'
-        N26(:,nt) = P26spal*exp(-rho*100*burial(:,nt)/Lspal)/fAl; % changed '(nt)' to '(:,nt)'
-        %negative muon capture
-        fBe = CNprop.lambda_Be + rho*erate*100/P10Lnmc;
-        fAl = CNprop.lambda_Al + rho*erate*100/P26Lnmc;
-        N10(:,nt) = N10(:,nt) + P10nmc*exp(-rho*100*burial(:,nt)/P10Lnmc)/fBe; % changed '(nt)' to '(:,nt)'
-        N26(:,nt) = N26(:,nt) + P26nmc*exp(-rho*100*burial(:,nt)/P26Lnmc)/fAl; % changed '(nt)' to '(:,nt)'
-        %fast muon capture
-        fBe = CNprop.lambda_Be + rho*erate*100/P10Lfm;
-        fAl = CNprop.lambda_Al + CNprop.rho*erate*100/P26Lfm;
-        N10(:,nt) = N10(:,nt) + P10fm*exp(-rho*100*burial(:,nt)/P10Lfm)/fBe; % changed '(nt)' to '(nt,:)'
-        N26(:,nt) = N26(:,nt) + P26fm*exp(-rho*100*burial(:,nt)/P26Lfm)/fAl; % changed '(nt)' to '(nt,:)'
-        
+        switch CNprod
+            case 'old'
+                erate = E5*1e-6;
+                %spallation
+                fBe = CNprop.lambda_Be + CNprop.rho*erate*100/CNprop.Lspal;
+                fAl = CNprop.lambda_Al + CNprop.rho*erate*100/CNprop.Lspal;
+                N10(:,nt) = P10spal*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lspal)/fBe; % changed '(nt)' to '(:,nt)'
+                N26(:,nt) = P26spal*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lspal)/fAl; % changed '(nt)' to '(:,nt)'
+                %negative muon capture
+                fBe = CNprop.lambda_Be + CNprop.rho*erate*100/CNprop.Lnmc;
+                fAl = CNprop.lambda_Al + CNprop.rho*erate*100/CNprop.Lnmc;
+                N10(:,nt) = N10(:,nt) + P10nmc*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lnmc)/fBe; % changed '(nt)' to '(:,nt)'
+                N26(:,nt) = N26(:,nt) + P26nmc*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lnmc)/fAl; % changed '(nt)' to '(:,nt)'
+                %fast muon capture
+                fBe = CNprop.lambda_Be + CNprop.rho*erate*100/CNprop.Lfm;
+                fAl = CNprop.lambda_Al + CNprop.rho*erate*100/CNprop.Lfm;
+                N10(:,nt) = N10(:,nt) + P10fm*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lfm)/fBe; % changed '(nt)' to '(nt,:)'
+                N26(:,nt) = N26(:,nt) + P26fm*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lfm)/fAl; % changed '(nt)' to '(nt,:)'
+                
+                
+            case 'new'
+                erate = E5*1e-6;
+                %spallation
+                fBe = CNprop.lambda_Be + rho*erate*100/Lspal;
+                fAl = CNprop.lambda_Al + rho*erate*100/Lspal;
+                N10(:,nt) = P10spal*exp(-rho*100*burial(:,nt)/Lspal)/fBe; % changed '(nt)' to '(:,nt)'
+                N26(:,nt) = P26spal*exp(-rho*100*burial(:,nt)/Lspal)/fAl; % changed '(nt)' to '(:,nt)'
+                %negative muon capture
+                fBe = CNprop.lambda_Be + rho*erate*100/P10Lnmc;
+                fAl = CNprop.lambda_Al + rho*erate*100/P26Lnmc;
+                N10(:,nt) = N10(:,nt) + P10nmc*exp(-rho*100*burial(:,nt)/P10Lnmc)/fBe; % changed '(nt)' to '(:,nt)'
+                N26(:,nt) = N26(:,nt) + P26nmc*exp(-rho*100*burial(:,nt)/P26Lnmc)/fAl; % changed '(nt)' to '(:,nt)'
+                %fast muon capture
+                fBe = CNprop.lambda_Be + rho*erate*100/P10Lfm;
+                fAl = CNprop.lambda_Al + CNprop.rho*erate*100/P26Lfm;
+                N10(:,nt) = N10(:,nt) + P10fm*exp(-rho*100*burial(:,nt)/P10Lfm)/fBe; % changed '(nt)' to '(nt,:)'
+                N26(:,nt) = N26(:,nt) + P26fm*exp(-rho*100*burial(:,nt)/P26Lfm)/fAl; % changed '(nt)' to '(nt,:)'
+        end
     end
     
     
