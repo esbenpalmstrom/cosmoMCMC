@@ -6,12 +6,15 @@ load fsamples.mat
 %(maybe max 500k proposed models).
 snr = 1; %number of samples from same excel file.
 numdp = 4; %including glaciation time and depth, right now only made for 3 or 4
+CNprod = 'new'; %'new' or 'old'
 
 nwalkers = 16; %number of walkers
 nmodmax = 1000e4; %max number of proposed models
 nmodacc = 80e3; %max number of accepted model
 lburnin = 8e3; %number of accepted models before burnin is finished
 k_meanlength = 100; %default: 100
+
+
 
 %for manual Tdglac
 Tdglac = 0.0103;
@@ -28,11 +31,11 @@ starttimestr = strrep(starttimestr,':','_');
 %correct length if working with all fsamples, or just gaustadata
 % for i = 1:length(fsamples.IDs)
 
-foldprefix = 'G2_gausta_oldmuon_long';
+foldprefix = 'G2_gausta_base_3points';
 
 for i = 1:1 %length(fsamples.IDs)
     
-    sampleID = 'gausta_data_2';
+    sampleID = 'gausta_data_2_2freepoints';
     %samplepath = ['./data/Gausta/' sampleID '.mat'];
     samplepath = ['./data/gausta_v2/' sampleID '.mat'];
     
@@ -42,7 +45,7 @@ for i = 1:1 %length(fsamples.IDs)
     savepath = ['models/' foldprefix starttimestr '/' sampleID '.mat'];
     reportpath = ['models/' foldprefix starttimestr '/reports/' sampleID '/'];
     mkdir (reportpath);
-    bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp) %use vE1 or E2
+    bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp,CNprod) %use vE1 or E2
     makereportEv2(snr,savepath,reportpath,sampleID,numdp)
 end
 

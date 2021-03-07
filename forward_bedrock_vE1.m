@@ -172,6 +172,12 @@ for i=1:model.Nsnr
             P26fm = CNprop.pr_fm_Al*P26tot;
             P26nmc = CNprop.pr_nmc_Al*P26tot;
             
+            rho = CNprop.rho;
+            Lspal = CNprop.Lspal;
+            P10Lnmc = CNprop.Lnmc;
+            P26Lnmc = CNprop.Lnmc;
+            P10Lfm = CNprop.Lfm;
+            P26Lfm = CNprop.Lfm;
             
         case 'new'
             rho = model.data{i}.density;
@@ -247,7 +253,6 @@ for i=1:model.Nsnr
     
     %integrate time
     for kk=(nt-1):-1:1
-        
         %dt = (time(kk+1)-time(kk));
         %pf = .5*(pfac(kk+1)+pfac(kk));
         %bz = .5*(burial(kk+1)+burial(kk));

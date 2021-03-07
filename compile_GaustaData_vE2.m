@@ -107,7 +107,7 @@ for i=1:ns
     
     %%% set model parameters
     model.Nsnr = 1; %number of samples
-    model.Nfree = 3; %Number of free depth points, changed from 2 to 3
+    model.Nfree = 2; %Number of free depth points, changed from 2 to 3
     model.Nsmp = 2*model.Nfree + 2; %number of sample specific parameters
     model.data{i}=sample{i}; %put sample into model
     model.Ndp = length(model.data{i}.depths); %Number of data points in depth profile
@@ -124,4 +124,4 @@ for i=1:ns
     ij=ij+sample{i}.Ndp; %Look for next sample in this row
 end
 
-save ./data/gausta_v2/gausta_data_2.mat sample model excelfile
+save ./data/gausta_v2/gausta_data_2_2freepoints.mat sample model excelfile
