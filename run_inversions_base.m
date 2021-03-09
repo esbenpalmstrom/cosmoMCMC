@@ -5,7 +5,7 @@ load fsamples.mat
 %proposed standard setting: 4 walkers, 40k accepted models, 4k accepted models burnin.
 %(maybe max 500k proposed models).
 snr = 1; %number of samples from same excel file.
-numdp = 4; %including glaciation time and depth, right now only made for 3 or 4
+numdp = 3; %including glaciation time and depth, right now only made for 3 or 4
 CNprod = 'new'; %'new' or 'old'
 
 nwalkers = 16; %number of walkers
@@ -31,11 +31,11 @@ starttimestr = strrep(starttimestr,':','_');
 %correct length if working with all fsamples, or just gaustadata
 % for i = 1:length(fsamples.IDs)
 
-foldprefix = 'G2_gausta_base_3points';
+foldprefix = 'G2_gausta_base';
 
 for i = 1:1 %length(fsamples.IDs)
     
-    sampleID = 'gausta_data_2_2freepoints';
+    sampleID = 'gausta_data_2';
     %samplepath = ['./data/Gausta/' sampleID '.mat'];
     samplepath = ['./data/gausta_v2/' sampleID '.mat'];
     

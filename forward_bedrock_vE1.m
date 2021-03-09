@@ -209,10 +209,16 @@ for i=1:model.Nsnr
     else
         
         %assume steady state concentration at starting point
+        switch numdp
+            case 3
+                erate = E4*1e-6;
+            case 4
+                erate = E5*1e-6;
+        end
         
         switch CNprod
             case 'old'
-                erate = E5*1e-6;
+                %erate = E5*1e-6;
                 %spallation
                 fBe = CNprop.lambda_Be + CNprop.rho*erate*100/CNprop.Lspal;
                 fAl = CNprop.lambda_Al + CNprop.rho*erate*100/CNprop.Lspal;
@@ -231,7 +237,7 @@ for i=1:model.Nsnr
                 
                 
             case 'new'
-                erate = E5*1e-6;
+                %erate = E5*1e-6;
                 %spallation
                 fBe = CNprop.lambda_Be + rho*erate*100/Lspal;
                 fAl = CNprop.lambda_Al + rho*erate*100/Lspal;

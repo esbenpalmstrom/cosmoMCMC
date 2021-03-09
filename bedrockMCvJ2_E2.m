@@ -153,7 +153,6 @@ model.Nmax = nmodmax; % Maximum number of models
 %number of total model parameters
 model.Nmp = model.Mmp + model.Nsnr*model.Nsmp;
 
-keyboard
 for i=1:model.Nmp
     umin(i) = model.mp{i}.vmin;
     umax(i) = model.mp{i}.vmax;
