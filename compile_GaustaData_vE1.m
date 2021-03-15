@@ -1,6 +1,7 @@
 function compile_GaustaData_vE1()
 %script to read and compile data specifically for gaustatoppen from a
 %specific excel file.
+%using old muon production method
 
 addpath('MuonP_Jane/Functions','MuonP_Jane/Functions/cl36','MuonP_Jane/Functions/cl36/scaling','MuonP_Jane/Functions/CronusCalc') 
 

@@ -2,6 +2,13 @@ function compile_GaustaData_vE2()
 
 %script to read and compile data specifically for gaustatoppen from a
 %specific excel file.
+%using new muon production method
+
+%{
+WIP:
+Reduce total production by the difference in the old and new muon
+production rates.
+%}
 
 addpath('MuonP_Jane/Functions','MuonP_Jane/Functions/cl36','MuonP_Jane/Functions/cl36/scaling','MuonP_Jane/Functions/CronusCalc')
 
@@ -67,9 +74,10 @@ for i=1:ns
     
     
     %Be10 production
-    sample{i}.P10total = 19.3360; %Surface Be10 production rate
-    sample{i}.production.P10total = sample{i}.P10total;
-    sample{i}.production.P10spal = 0.98*sample{i}.production.P10total; %later combined, then split with other factors
+    %sample{i}.P10total = 19.3360; %Surface Be10 production rate
+    %sample{i}.production.P10total = sample{i}.P10total;
+    %sample{i}.production.P10spal = 0.98*sample{i}.production.P10total; %later combined, then split with other factors
+    sample{i}.production.P10spal = 18.88;
     %muons
     sample{i}.P10spal = sample{i}.production.P10spal;
     mc10.k_neg = 0.00191 .* 0.704 .* 0.1828; % From BCO fit, Model 1A, alpha=1; f_star*f_C*f_D
@@ -86,10 +94,14 @@ for i=1:ns
     sample{i}.production.P10_fm = p10_muons.P(1)*shield_fac10_fm;
     sample{i}.P10muon = sample{i}.production.P10_nmc + sample{i}.production.P10_fm;
     
+    sample{i}.P10total = sample{i}.production.P10spal + sample{i}.P10muon; %Surface Be10 production rate
+    sample{i}.production.P10total = sample{i}.P10total;
+    
     %Al26 production
-    sample{i}.P26total = 132.2438; %Surface Al26 production rate
-    sample{i}.production.P26total = sample{i}.P26total;
-    sample{i}.production.P26spal = 0.98*sample{i}.production.P26total; %later combined, then split with other factors
+%     sample{i}.P26total = 132.2438; %Surface Al26 production rate
+%     sample{i}.production.P26total = sample{i}.P26total;
+%     sample{i}.production.P26spal = 0.98*sample{i}.production.P26total; %later combined, then split with other factors
+    sample{i}.production.P26spal = 127.39;
     %muons
     sample{i}.P26spal = sample{i}.production.P26spal;
     mc26.k_neg = 0.0133 .* 0.296 .* 0.6559; % From BCO fit, Model 1A, alpha=1; f_star*f_C*f_D
@@ -104,10 +116,12 @@ for i=1:ns
     sample{i}.production.P26_fm = p26_muons.P(1)*shield_fac26_fm;
     sample{i}.P26muon = sample{i}.production.P26_nmc + sample{i}.production.P26_fm;
     
+    sample{i}.P26total = sample{i}.production.P26spal + sample{i}.P26muon; %Surface Al26 production rate
+    sample{i}.production.P26total = sample{i}.P26total;
     
     %%% set model parameters
     model.Nsnr = 1; %number of samples
-    model.Nfree = 2; %Number of free depth points, changed from 2 to 3
+    model.Nfree = 3; %Number of free depth points, changed from 2 to 3
     model.Nsmp = 2*model.Nfree + 2; %number of sample specific parameters
     model.data{i}=sample{i}; %put sample into model
     model.Ndp = length(model.data{i}.depths); %Number of data points in depth profile
@@ -124,4 +138,4 @@ for i=1:ns
     ij=ij+sample{i}.Ndp; %Look for next sample in this row
 end
 
-save ./data/gausta_v2/gausta_data_2_2freepoints.mat sample model excelfile
+save ./data/gausta_v2/gausta_data_2.mat sample model excelfile

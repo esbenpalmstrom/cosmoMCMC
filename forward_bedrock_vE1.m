@@ -143,7 +143,6 @@ for i=1:model.Nsnr
     if model.data{1}.depths(1) ~= 0
         burial(1,:) = burial(1,:) + depths(1).*ones(1,nt);
     end
-    
     dOn = interp1(dOt,dO,time,'linear',dO(end)); %d18O values at 'time'
     pfac = ones(nt,1); %controls exposure, modified below
 %     I = find(dOn > d18Op); pfac(I) = 0; %No exposure when d18O
@@ -255,7 +254,6 @@ for i=1:model.Nsnr
                 N26(:,nt) = N26(:,nt) + P26fm*exp(-rho*100*burial(:,nt)/P26Lfm)/fAl; % changed '(nt)' to '(nt,:)'
         end
     end
-    
     
     %integrate time
     for kk=(nt-1):-1:1
