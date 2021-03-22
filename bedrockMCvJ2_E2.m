@@ -29,7 +29,7 @@ parallelize the workflow
 
 load fsamples.mat
 addpath Functions data models;
-addpath export_fig
+addpath Functions/export_fig
 addpath data/FS
 
 %graphics switch

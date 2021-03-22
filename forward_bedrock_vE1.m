@@ -233,7 +233,7 @@ for i=1:model.Nsnr
                 fAl = CNprop.lambda_Al + CNprop.rho*erate*100/CNprop.Lfm;
                 N10(:,nt) = N10(:,nt) + P10fm*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lfm)/fBe; % changed '(nt)' to '(nt,:)'
                 N26(:,nt) = N26(:,nt) + P26fm*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lfm)/fAl; % changed '(nt)' to '(nt,:)'
-                
+                keyboard
                 
             case 'new'
                 %erate = E5*1e-6;

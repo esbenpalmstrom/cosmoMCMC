@@ -7,7 +7,8 @@ clear; close all;
 addpath Functions
 
 %create depth profile
-d = linspace(0,200,200); %[m]
+d = linspace(0,10,201); %[m]
+%ds = linspace(0,10,201);
 
 CNprop = getCNprop;
 
@@ -42,10 +43,22 @@ P26fmd = P26fm*exp(-CNprop.rho*100*d/CNprop.Lfm);
 P10m = P10nmcd + P10fmd;
 P26m = P26nmcd + P26fmd;
 
-figure; hold on;
+%spallation
+P10spald = P10spal*exp((-CNprop.rho*100*d)/CNprop.Lspal);
+P26spald = P26spal*exp((-CNprop.rho*100*d)/CNprop.Lspal);
+
+figure; hold on; grid on;
 plot(P10m,d,'-r');
 plot(P26m,d,'-b');
-grid on
+
+% format bank
+% format compact
+% disp('old')
+% Lspal
+% P10Lfm
+% P10Lnmc
+% P26Lfm
+% P26Lnmc
 
 
 %new production
@@ -66,6 +79,13 @@ P26Lfm = model.data{1}.production.P26_Lfm;
 P26nmc = model.data{1}.production.P26_nmc;
 P26Lnmc = model.data{1}.production.P26_Lnmc;
 
+% disp('new')
+% Lspal
+% P10Lfm
+% P10Lnmc
+% P26Lfm
+% P26Lnmc
+
 %nmc
 P10nmcd = P10nmc*exp(-rho*100*d/P10Lnmc);
 P26nmcd = P26nmc*exp(-rho*100*d/P26Lnmc);
@@ -77,18 +97,19 @@ P10m = P10nmcd + P10fmd;
 P26m = P26nmcd + P26fmd;
 
 %spal
-P10spald = P10spal*exp(-rho*100*d/P10spal);
-P26spald = P26spal*exp(-rho*100*d/P26spal);
+%P10spald = P10spal*exp(-rho*100*d/Lspal);
+%P26spald = P26spal*exp(-rho*100*d/Lspal);
 
 plot(P10m,d,'--r');
 plot(P26m,d,'--b');
 
-%plot(P10spald,d,'--r');
-%plot(P26spald,d,'--b');
+plot(P10spald,d,'-.r');
+plot(P26spald,d,'-.b');
 
-%xlim([10e-10 10e5])
+xlim([10e-8 10e3])
+%ylim([0 500]);
 set(gca,'Ydir','reverse')
 set(gca, 'XScale', 'log')
-legend('old Be10 P','old Al26 P','new Be10 P','new Al26 P');
-ylabel('depth [cm]')
+legend('old Be10 P','old Al26 P','new Be10 P','new Al26 P','Be10 spallation','Al26 spallation');
+ylabel('depth [m]')
 xlabel('production rate [atom/g/yr]')

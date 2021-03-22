@@ -6,7 +6,7 @@ load fsamples.mat
 %(maybe max 500k proposed models).
 snr = 1; %number of samples from same excel file.
 numdp = 4; %including glaciation time and depth, right now only made for 3 or 4
-CNprod = 'new'; %'new' or 'old', remember to correct the data file used.
+CNprod = 'old'; %'new' or 'old', remember to correct the data file used.
 
 nwalkers = 16; %number of walkers
 nmodmax = 1000e4; %max number of proposed models
@@ -40,9 +40,9 @@ end
     
 for i = 1:1 %length(fsamples.IDs)
     
-    sampleID = 'gausta_data_2';
+    sampleID = 'gausta_data_2_onlytop';
     %samplepath = ['./data/Gausta/' sampleID '.mat'];
-    samplepath = ['./data/gausta_v2/' sampleID '.mat'];
+    samplepath = ['./data/Gausta/' sampleID '.mat'];
     
     %sampleID = fsamples.IDs{i};
     %samplepath = ['./data/FS/' sampleID '.mat'];
