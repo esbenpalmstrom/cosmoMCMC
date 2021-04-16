@@ -98,10 +98,10 @@ line([x0,x0+dx,x0+dx,x0,x0],[y0,y0,y0+dy,y0+dy,y0],'color','k','linewidth',2);
 line(tp,zp,'color',cg,'linewidth',4);
         
 %draw dashed lines    
-for j=3:length(tp)-1,
+for j=3:length(tp)-1
     lh(j) = line([tp(j),tp(j)+(xlim(2)-tp(j))],[zp(j),zp(j)],'linestyle','--','color','k');
     lv(j) = line([tp(j),tp(j)],zp(j)*[1,0],'linestyle','--','color','k');
-end;
+end
 
 %draw points
 mz = 15;
@@ -112,23 +112,23 @@ xlim = get(gca,'xlim');
 ylim = get(gca,'ylim');
 
 
-for j=3:length(tp)-1,
+for j=3:length(tp)-1
     xtp(j-1) = pos(1) + pos(3)*(tp(j)-xlim(1))/(xlim(2)-xlim(1));
     ytp(j-1) = pos(2) + pos(4) + 0.02;
     tlabel{j-1} = ['$T_',num2str(j-1),'$'];
     xzp(j-1) = pos(1) + pos(3) + 0.02;
     yzp(j-1) = pos(2) + pos(4)*(ylim(2)-zp(j))/(ylim(2)-ylim(1));
     zlabel{j-1} = ['$Z_',num2str(j-1),'$'];
-end;
+end
 
 axes(ax3); hold on;
 
 
 %draw dashed lines    
-for j=2,
+for j=2
     lh(j) = line([tp(j),tp(j)+(xlim(2)-tp(j))],[zp(j),zp(j)],'linestyle','--','color','k');
     lv(j) = line([tp(j),tp(j)],zp(j)*[1,0],'linestyle','--','color','k');
-end;
+end
 
 %draw line segment
 line(tp(1:3),zp(1:3),'color',cg,'linewidth',4);
@@ -141,20 +141,20 @@ pos = get(gca,'position');
 xlim = get(gca,'xlim');
 ylim = get(gca,'ylim');
 
-for j=2,
+for j=2
     xtp(j-1) = pos(1) + pos(3)*(tp(j)-xlim(1))/(xlim(2)-xlim(1));
     ytp(j-1) = pos(2) + pos(4) + 0.03;
     tlabel{j-1} = ['$T_{\textrm{dg}}$'];
     xzp(j-1) = pos(1) + pos(3) + 0.02;
     yzp(j-1) = pos(2) + pos(4)*(ylim(2)-zp(j))/(ylim(2)-ylim(1));
     zlabel{j-1} = ['$Z_{\textrm{dg}}$'];
-end;
+end
 
 axes(ax0); hold on;
-for j=2:length(tp)-1,
+for j=2:length(tp)-1
     ttp(j-1)=text(xtp(j-1),ytp(j-1),tlabel{j-1},'fontsize',24,'horizontalalignment','center');
     ttz(j-1)=text(xzp(j-1),yzp(j-1),zlabel{j-1},'fontsize',24,'verticalalignment','middle');
-end;
+end
 ttO=text(xOt,yOt,'$\delta_{18}$O$_c$','fontsize',24,'verticalalignment','middle');
 
 text(0.325,0.15,'Time before present (kyr)','horizontalalignment','center','fontsize',20);

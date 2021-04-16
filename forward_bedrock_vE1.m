@@ -66,7 +66,6 @@ for i=1:model.Nsnr
             T3 = T2 + dT3;
             z3 = z2 + dz3;
             
-            
             T4 = model.age; %this requires age > Tdg+dT2+dT3
             z4 = z3 + (model.age - T3)*E4;
             
@@ -161,6 +160,9 @@ for i=1:model.Nsnr
     
     switch CNprod
         case 'old'
+            rho = CNprop.rho;
+            Lspal = CNprop.Lspal;
+            
             P10spal = model.data{i}.P10spal;
             P10tot = model.data{i}.P10spal + model.data{i}.P10muon;
             P10fm = CNprop.pr_fm_Be*P10tot;
@@ -171,13 +173,11 @@ for i=1:model.Nsnr
             P26fm = CNprop.pr_fm_Al*P26tot;
             P26nmc = CNprop.pr_nmc_Al*P26tot;
             
-            rho = CNprop.rho;
-            Lspal = CNprop.Lspal;
+
             P10Lnmc = CNprop.Lnmc;
             P26Lnmc = CNprop.Lnmc;
             P10Lfm = CNprop.Lfm;
             P26Lfm = CNprop.Lfm;
-            
         case 'new'
             rho = model.data{i}.density;
             Lspal = model.data{i}.production.Lspal;
@@ -187,7 +187,6 @@ for i=1:model.Nsnr
             P10Lfm = model.data{i}.production.P10_Lfm;
             P10nmc = model.data{i}.production.P10_nmc;
             P10Lnmc = model.data{i}.production.P10_Lnmc;
-            
             
             P26spal = model.data{i}.production.P26spal;
             P26fm = model.data{i}.production.P26_fm;
@@ -233,7 +232,6 @@ for i=1:model.Nsnr
                 fAl = CNprop.lambda_Al + CNprop.rho*erate*100/CNprop.Lfm;
                 N10(:,nt) = N10(:,nt) + P10fm*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lfm)/fBe; % changed '(nt)' to '(nt,:)'
                 N26(:,nt) = N26(:,nt) + P26fm*exp(-CNprop.rho*100*burial(:,nt)/CNprop.Lfm)/fAl; % changed '(nt)' to '(nt,:)'
-                keyboard
                 
             case 'new'
                 %erate = E5*1e-6;
@@ -249,7 +247,7 @@ for i=1:model.Nsnr
                 N26(:,nt) = N26(:,nt) + P26nmc*exp(-rho*100*burial(:,nt)/P26Lnmc)/fAl; % changed '(nt)' to '(:,nt)'
                 %fast muon capture
                 fBe = CNprop.lambda_Be + rho*erate*100/P10Lfm;
-                fAl = CNprop.lambda_Al + CNprop.rho*erate*100/P26Lfm;
+                fAl = CNprop.lambda_Al + rho*erate*100/P26Lfm;
                 N10(:,nt) = N10(:,nt) + P10fm*exp(-rho*100*burial(:,nt)/P10Lfm)/fBe; % changed '(nt)' to '(nt,:)'
                 N26(:,nt) = N26(:,nt) + P26fm*exp(-rho*100*burial(:,nt)/P26Lfm)/fAl; % changed '(nt)' to '(nt,:)'
         end

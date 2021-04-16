@@ -4,7 +4,9 @@ function compile_GaustaData_vE1()
 %using old muon production method
 
 addpath('MuonP_Jane/Functions','MuonP_Jane/Functions/cl36','MuonP_Jane/Functions/cl36/scaling','MuonP_Jane/Functions/CronusCalc') 
+addpath Functions
 
+CNprop = getCNprop;
 
 close all;
 
@@ -49,7 +51,27 @@ for i=1:ns
     sample{i}.dr2610 = sample{i}.r2610.*sqrt((sample{i}.dN10./sample{i}.N10).^2+(sample{i}.dN26./sample{i}.N26).^2);
     
     
+    %saving CN production in new structure convention
+    model.data{i}.production.P10spal = sample{i}.P10spal;
+    model.data{i}.production.P10total = sample{i}.P10total;
+    model.data{i}.production.P10_fm = CNprop.pr_fm_Be*sample{i}.P10total;
+    model.data{i}.production.P10_nmc = CNprop.pr_nmc_Be*sample{i}.P10total;
+    model.data{i}.production.P10_Lnmc = CNprop.Lnmc;
+    model.data{i}.production.P10_Lfm = CNprop.Lfm;
+    
+    model.data{i}.production.P26spal = sample{i}.P26spal;
+    model.data{i}.production.P26total = sample{i}.P26total;
+    model.data{i}.production.P26_fm = CNprop.pr_fm_Al*sample{i}.P26total;
+    model.data{i}.production.P26_nmc = CNprop.pr_nmc_Al*sample{i}.P26total;
+    model.data{i}.production.P26_Lnmc = CNprop.Lnmc;
+    model.data{i}.production.P26_Lfm = CNprop.Lfm;
+    
+    model.data{i}.density = CNprop.rho;
+    model.data{i}.production.Lspal = CNprop.Lspal;
+    
+    
     %%% set model parameters
+
     model.Nsnr = 1; %number of samples
     model.Nfree = 3; %Number of free depth points, changed from 2 to 3
     model.Nsmp = 2*model.Nfree + 2; %number of sample specific parameters
@@ -61,6 +83,8 @@ for i=1:ns
     model.z0 = 20; %Max depth
     model.Temp = 1.0; %adjusted in run file.
     model.Mmp = 2; %number of generic model parameters
+    
+    %following is unused (only model.data.production items are used)
     P10total = sample{i}.P10total;
     model.data{i}.P10muon = 0.02*P10total;
     model.data{i}.P10spal = 0.98*P10total;

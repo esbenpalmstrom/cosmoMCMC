@@ -103,8 +103,8 @@ P26m = P26nmcd + P26fmd;
 plot(P10m,d,'--r');
 plot(P26m,d,'--b');
 
-plot(P10spald,d,'-.r');
-plot(P26spald,d,'-.b');
+% plot(P10spald,d,'-.r');
+% plot(P26spald,d,'-.b');
 
 xlim([10e-8 10e3])
 %ylim([0 500]);

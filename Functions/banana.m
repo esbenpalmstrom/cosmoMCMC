@@ -1,6 +1,6 @@
 function banana()
 
-CNprop = getCNprop()
+CNprop = getCNprop();
 
 %
 % banana() produces a cosmo banana plot
@@ -85,20 +85,20 @@ line(NBe_f,NAl_f./NBe_f,'color','k');
 tburial = [0.5e6,1e6,1.5e6,2e6];
 NBe_b = zeros(length(time),length(tburial));
 NAl_b = zeros(length(time),length(tburial));
-for i=1:length(tburial),
+for i=1:length(tburial)
    NBe_b(:,i) = NBe(:,1).*exp(-lambda_Be*tburial(i)); 
    NAl_b(:,i) = NAl(:,1).*exp(-lambda_Al*tburial(i)); 
    line(NBe_b(:,i),NAl_b(:,i)./NBe_b(:,i),'color','k','linestyle',':');
-end;
+end
 
 %burial paths
 tb = linspace(0,3e6,400);
 etime = [1e3,1e4,1e5,1e6,1e7]; %preburial exposure times
 NBe_p = zeros(length(tb),length(etime));
 NAl_p = zeros(length(tb),length(etime));
-for i=1:length(etime),
+for i=1:length(etime)
     NBe_p(:,i) = Ptot_Be/lambda_Be*(1-exp(-lambda_Be*etime(i)))*exp(-lambda_Be*tb);
     NAl_p(:,i) = Ptot_Al/lambda_Al*(1-exp(-lambda_Al*etime(i)))*exp(-lambda_Al*tb);
 
     line(NBe_p(:,i),NAl_p(:,i)./NBe_p(:,i),'color','k','linestyle',':');    
-end;
+end

@@ -1,4 +1,4 @@
-function bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp,CNprod)
+function bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp,CNprod,model_d18O)
 %MCMC model modified from bedrockMCv7 (DLE) by JLA, June 2019
 %
 % vJ2 updated Feb. 2020 by JLA includes the possibility of extra data points at depth
@@ -70,7 +70,7 @@ model.tc = 1.0; %time constraint for each data point except Tdg, Myr.
 % model.Mmp = 2; %number of generic model parameters
 model.mp{1}.name = ['d18O threshold'];
 model.mp{1}.vmin = 3.5;
-model.mp{1}.vmax = 5.3; %changed from 5.0 to 5.3
+model.mp{1}.vmax = 5.0; %changed from 5.0 to 5.3
 
 
 model.mp{2}.name = ['Time of deglaciation (Tdg)']; % use uncertainty of +/- 1ka
@@ -83,8 +83,10 @@ else
     %If not analyzing a sample in fsamples, use a manually inserted Tdglac
     
     %for example the gaustatoppen deglaciation.
-    model.mp{2}.vmin = Tdglac - 1e-3;
-    model.mp{2}.vmax = Tdglac + 14.5e-3;
+    %model.mp{2}.vmin = Tdglac - 5e-3;
+    %model.mp{2}.vmax = Tdglac + 5e-3;
+    model.mp{2}.vmin = 10e-3;
+    model.mp{2}.vmax = 20e-3;
     %model.mp{2}.vmax = Tdglac + 34.5e-3; %test
 end
 
@@ -113,7 +115,19 @@ for i=1:model.Nsnr
             model.mp{model.Mmp+(i-1)*model.Nsmp+6}.vmax = 2; %2=100 m/Myr
             
             %add sample info to models
-            model.data{i} = sample{snr(i)};
+            %             model.data{i} = sample{snr(i)};
+            model.data{i}.Ndp = sample{snr(i)}.Ndp;
+            model.data{i}.name = sample{snr(i)}.name;
+            model.data{i}.type = sample{snr(i)}.type;
+            model.data{i}.batchid = sample{snr(i)}.batchid;
+            model.data{i}.N10 = sample{snr(i)}.N10;
+            model.data{i}.dN10 = sample{snr(i)}.dN10;
+            model.data{i}.N26 = sample{snr(i)}.N26;
+            model.data{i}.dN26 = sample{snr(i)}.dN26;
+            model.data{i}.elevation = sample{snr(i)}.elevation;
+            model.data{i}.T10 = sample{snr(i)}.T10;
+            model.data{i}.r2610 = sample{snr(i)}.r2610;
+            model.data{i}.dr2610 = sample{snr(i)}.dr2610;
         case 4
             model.mp{model.Mmp+(i-1)*model.Nsmp+1}.name =  ['Z at Tdg, sample ',num2str(i)];
             model.mp{model.Mmp+(i-1)*model.Nsmp+1}.vmin = 0;
@@ -141,7 +155,20 @@ for i=1:model.Nsnr
             model.mp{model.Mmp+(i-1)*model.Nsmp+8}.vmax = 2; %2=100 m/Myr
             
             %add sample info to models
-            model.data{i} = sample{snr(i)};
+            %model.data{i} = sample{snr(i)};
+            model.data{i}.Ndp = sample{snr(i)}.Ndp;
+            model.data{i}.name = sample{snr(i)}.name;
+            model.data{i}.type = sample{snr(i)}.type;
+            model.data{i}.batchid = sample{snr(i)}.batchid;
+            model.data{i}.N10 = sample{snr(i)}.N10;
+            model.data{i}.dN10 = sample{snr(i)}.dN10;
+            model.data{i}.N26 = sample{snr(i)}.N26;
+            model.data{i}.dN26 = sample{snr(i)}.dN26;
+            model.data{i}.elevation = sample{snr(i)}.elevation;
+            model.data{i}.T10 = sample{snr(i)}.T10;
+            model.data{i}.r2610 = sample{snr(i)}.r2610;
+            model.data{i}.dr2610 = sample{snr(i)}.dr2610;
+            
     end
 end
 
@@ -163,7 +190,6 @@ umin = umin(:);
 umax = umax(:);
 
 %data and covariance
-
 % dobs=zeros(1,model.Nds*model.Nsnr); sigd=zeros(1,model.Nds*model.Nsnr); %initiate data observation and error vectors
 % for i=1:model.Nsnr %check
 %     for j=1:model.Ndp
@@ -398,7 +424,7 @@ for nw = 1:model.Nwalk
         end
         
         %********** Forward model *****************
-        [gmp,time,burial] = forward_bedrock_vE1(up,model,CNprop,numdp,CNprod); %gmp: predicted data vector.
+        [gmp,time,burial] = forward_bedrock_vE2(up,model,CNprop,numdp,model_d18O); %gmp: predicted data vector.
         
         gmp = gmp(1:model.Nds);
         

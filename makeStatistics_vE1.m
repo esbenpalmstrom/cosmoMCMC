@@ -46,6 +46,7 @@ for i = 1:length(fsamples.IDs)
         
         subplot(1,2,1)
         hold on; box on; grid on;
+        xlabel('erosion over the last 1 megayr [m]')
         set(gca,'YTickLabel',[]);
         xlim([0 20])
         ylim([0 1])
@@ -145,6 +146,7 @@ for i = 1:length(fsamples.IDs)
         
         %make plot of d18Ot distribution
         subplot(1,2,2)
+        xlabel('d18O threshold value')
         set(gca,'YTickLabel',[]);
         
         xpos = linspace(3.5,5,100); %frequency boxes and position of patches

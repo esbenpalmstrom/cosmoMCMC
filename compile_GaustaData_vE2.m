@@ -37,7 +37,7 @@ for i=1:ns
     sample{i}.dN10 = num(ij:ij+sample{i}.Ndp-1,3); %err10
     sample{i}.N26 = num(ij:ij+sample{i}.Ndp-1,4); %N26
     sample{i}.dN26 = num(ij:ij+sample{i}.Ndp-1,6); %err26
-    sample{i}.elev = 1715; %elevation (m)
+    sample{i}.elevation = 1715; %elevation (m)
     
     sample{i}.lat = 59.8482;
     sample{i}.lon = 8.6600;
@@ -60,10 +60,10 @@ for i=1:ns
     z_m = linspace(0,10,100);
     z_D = D_m*z_m.^3/10*rho; %denser depth-grid near surface
     %Convert elevation to atm pressure (hPa)
-    p = ERA40atm(sample{i}.lat,sample{i}.lon,sample{i}.elev);
+    p = ERA40atm(sample{i}.lat,sample{i}.lon,sample{i}.elevation);
     sample{i}.pressure = p;
     %Spallation attenuation and thickness correction
-    Lspal=attenuationlength(sample{i}.lat,sample{i}.lon,sample{i}.elev,p); %Calculated from CronusCalc functions based on site cutoff rigidity, not considering terrain shielding %[g/cm2]
+    Lspal=attenuationlength(sample{i}.lat,sample{i}.lon,sample{i}.elevation,p); %Calculated from CronusCalc functions based on site cutoff rigidity, not considering terrain shielding %[g/cm2]
     sample{i}.production.Lspal=Lspal; %[g/cm2]
     sf_spal = exp(-sample{i}.thick/2*rho/Lspal); %Factor to correct production rate for thickness of sample, sets surface production =production midway through sample. Make sure this is not already factored in to site-specific production rates
     
@@ -74,13 +74,14 @@ for i=1:ns
     
     
     %Be10 production
-    %sample{i}.P10total = 19.3360; %Surface Be10 production rate
+    sample{i}.P10total = 19.3360; %Surface Be10 production rate
     %sample{i}.production.P10total = sample{i}.P10total;
     %sample{i}.production.P10spal = 0.98*sample{i}.production.P10total; %later combined, then split with other factors
 %     sample{i}.production.P10spal = 18.88;
-    sample{i}.production.P10spal = 19.35;
+    %sample{i}.production.P10spal = 19.35;
+
     %muons
-    sample{i}.P10spal = sample{i}.production.P10spal;
+    %sample{i}.P10spal = sample{i}.production.P10spal;
     mc10.k_neg = 0.00191 .* 0.704 .* 0.1828; % From BCO fit, Model 1A, alpha=1; f_star*f_C*f_D
     mc10.sigma0 = 0.280e-30; % From BCO fit, model 1A, alpha=1;
     mc10.Natoms = 2.006e22; %Oxygen atoms pr gram Quartz
@@ -95,17 +96,19 @@ for i=1:ns
     sample{i}.production.P10_fm = p10_muons.P(1)*shield_fac10_fm;
     sample{i}.P10muon = sample{i}.production.P10_nmc + sample{i}.production.P10_fm;
     
-    sample{i}.P10total = sample{i}.production.P10spal + sample{i}.P10muon; %Surface Be10 production rate
+    %sample{i}.P10total = sample{i}.production.P10spal + sample{i}.P10muon; %Surface Be10 production rate
     sample{i}.production.P10total = sample{i}.P10total;
+    sample{i}.P10spal = sample{i}.P10total - sample{i}.P10muon;
+    sample{i}.production.P10spal = sample{i}.P10spal;
     
     %Al26 production
-%     sample{i}.P26total = 132.2438; %Surface Al26 production rate
+    sample{i}.P26total = 132.2438; %Surface Al26 production rate
 %     sample{i}.production.P26total = sample{i}.P26total;
 %     sample{i}.production.P26spal = 0.98*sample{i}.production.P26total; %later combined, then split with other factors
 %     sample{i}.production.P26spal = 127.39;
-    sample{i}.production.P26spal = 130.58;
+    %sample{i}.production.P26spal = 130.58;
     %muons
-    sample{i}.P26spal = sample{i}.production.P26spal;
+    %sample{i}.P26spal = sample{i}.production.P26spal;
     mc26.k_neg = 0.0133 .* 0.296 .* 0.6559; % From BCO fit, Model 1A, alpha=1; f_star*f_C*f_D
     mc26.sigma0 = 3.89e-30; % From BCO fit, model 1A, alpha=1;
     mc26.Natoms = 1.003e22; %Si atoms pr gram Quartz
@@ -118,8 +121,10 @@ for i=1:ns
     sample{i}.production.P26_fm = p26_muons.P(1)*shield_fac26_fm;
     sample{i}.P26muon = sample{i}.production.P26_nmc + sample{i}.production.P26_fm;
     
-    sample{i}.P26total = sample{i}.production.P26spal + sample{i}.P26muon; %Surface Al26 production rate
+    %sample{i}.P26total = sample{i}.production.P26spal + sample{i}.P26muon; %Surface Al26 production rate
     sample{i}.production.P26total = sample{i}.P26total;
+    sample{i}.P26spal = sample{i}.P26total - sample{i}.P26muon;
+    sample{i}.production.P26spal = sample{i}.P26spal;
     
     %%% set model parameters
     model.Nsnr = 1; %number of samples
