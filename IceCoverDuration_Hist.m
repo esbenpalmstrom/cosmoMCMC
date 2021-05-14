@@ -6,7 +6,7 @@
 clear; close all;
 load('data/d18Ocurves.mat');
 %choose which models to load:
-models = [4];
+models = [17];
 eem = 116;
 eemt = zeros(1,eem);
 LGM = 26;
@@ -54,32 +54,77 @@ for i = 1:length(models)
         
     end
     
-    figure; hold on; grid on;
-    bar(eemt)
-    xlabel('time'), ylabel('no. of models with ice')
-    title('Number of models with ice at given time')
+    figure; hold on;
+    sbplt1 = subplot(2,2,1);
+    box on;
+    %set(gcf,'Position',[100 100 900 750]);
+    eemt_norm = (eemt./length(eem_iceduration));
+    bar(eemt_norm,'BarWidth',1.0)
+    xlabel('time'), ylabel('Likelihood of models to have ice at given time')
+    title('')
+    grid on;
     
-    figure; hold on; grid on;
-    bar(eemt)
-    xlabel('time'), ylabel('no. of models with ice')
+    sbplt2 = subplot(2,2,2);
+    box on;
+    hold on; grid on;
+    %set(gcf,'Position',[100 100 900 750]);
+    bar(eemt_norm,'BarWidth',1.0)
+    xlabel('time'), ylabel('Likelihood of models to have ice at given time')
     xlim([0 50]);
-    title('Number of models with ice at given time')
+    title('')
     
-    figure; hold on; grid on;
-    bar(LGMt)
-    xlabel('time, kyr'), ylabel('no. of models with ice')
-    title('Number of models with ice at given time')
+    sbplt3 = subplot(2,2,3);
+    box on;
+    hold on; grid on;
+    %set(gcf,'Position',[100 100 900 750]);
+    LGMt_norm = (LGMt./length(LGM_iceduration));
+    bar(LGMt_norm,'BarWidth',1.0)
+    xlabel('time, kyr'), ylabel('Likelihood of models to have ice at given time')
+    title('')
     
-    %make plot with total ice cover duration for given time intervals
-    figure; hold on; grid on;
-    histogram(LGM_iceduration);
-    xlabel('kyrs with ice cover since LGM')
+    
+    %Ice cover duration freq. for models since LGM. Maybe irrelevant?
+%     figure; hold on; grid on;
+%     set(gcf,'Position',[100 100 900 750]);
+%     %[LGMCount,LGMValues] = hist(LGM_iceduration(:),26);
+%     %LGMCount = LGMCount./sum(LGMCount);
+%     %bar(LGMCount,LGMValues,'BarWidth',1.0)
+%     histogram(LGM_iceduration,'Normalization','probability','FaceAlpha',1);
+%     xlabel('kyrs with ice cover since LGM'), ylabel('Likelihood of total ice cover duration of all accepted models')
+%     title('total ice cover duration frequency')
+%     %set(gca, 'YScale', 'log')
+%     set(gcf,'color','white')
+    
+    
+    
+    %ice cover duration freq. for all models
+    sbplt4 = subplot(2,2,4);
+    box on;
+    hold on; grid on;
+    set(gcf,'Position',[100 100 1200 750]);
+    [vCount, vValues] = hist(eem_iceduration(:),62);
+    vCount = vCount./sum(vCount);
+    bar(vValues,vCount,'BarWidth',1.0)
+    r = rectangle('Position',[1.2 0 sbplt4.XLim(2) 0.04],'LineWidth',1.5);
+    %histogram(eem_iceduration,'Normalization','probability');
+    xlabel('kyrs with ice cover since eem'), ylabel('Likelihood of total ice cover duration of all accepted models')
     title('total ice cover duration frequency')
+    set(gcf,'color','white')
     
-    figure; hold on; grid on;
-    histogram(eem_iceduration);
-    xlabel('kyrs with ice cover since eem');
-    title('total ice cover duration frequency')
+    %sumcurve = cumsum(vCount,'reverse');
+    %plot(vValues,sumcurve,'-b')
+    
+    
+    ax = axes('Position',[sbplt4.Position(1)+0.08 sbplt4.Position(2)+0.1 0.23 0.20]);
+    vCount(1) = 0;
+    bar(vValues,vCount,'BarWidth',1.0)
+    grid on;
+    set(ax,'Xlim',[ax.XLim(1)+1 ax.XLim(2)]);
+    set(ax,'XTick',[1 ax.XTick]);
+    
+    figurename = 'IceCoverDurationHistograms';
+    section = 'discussion';
+    export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' section '/' figurename],'-jpg','-r300');
     
 end
-distFig
+%distFig

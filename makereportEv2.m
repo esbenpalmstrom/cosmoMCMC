@@ -97,7 +97,7 @@ print('temp3.pdf','-dpdf','-fillpage');
 filename = strcat(sname,'walkers.png');
 saveas(gcf,filename)
 
-%********************** Parameter distributions ************************
+%********************** Parameter distributions *****************
 figure()
 set(gcf,'units','normalized','position',[.3,.2,.4,.6]);
 set(gcf,'Name','Parameter distributions');
@@ -395,6 +395,7 @@ for ns = 1:model.Nsnr
     
     [C,h] = contourf(tbin,zbin,(histgrid+0.5).^0.25,50, ...
         'linestyle','none');
+    colorbar
     
     
 end
@@ -412,6 +413,7 @@ delete('temp2.pdf','temp3.pdf')
 set(groot','defaulttextinterpreter','default');
 set(groot, 'defaultAxesTickLabelInterpreter','default');
 set(groot, 'defaultLegendInterpreter','default');
+
 
 %set(gcf, 'Position', get(0, 'Screensize'));
 filename = strcat(sname,'report.jpg');

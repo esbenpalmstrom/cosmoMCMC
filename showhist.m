@@ -32,7 +32,9 @@ end
 
 %mname = ['models/focus_samples_SyntheticDepths/focus_sample_',str,'_BeAl_surface.mat'];
 %mname = ['models/FSbase_gausta27_Jan_2021_20_45_31_noThree/gausta_data_noThree.mat'];
-modelfolder = ['4'];
+
+modelfolder = ['16'];
+
 mname = ['models/' modelfolder '/gausta_data_2.mat'];
 
 load(mname);
@@ -146,7 +148,7 @@ for i=1:Nxi-1
     cf = fint(i);
     col = (1-cf)*[1,1,1]+cf*cg;
     patch([tta(:);flipud(tta(:))],[top(:);flipud(base(:))],col,'linestyle','none');
-end;
+end
 
 ddg = dd;
 ddig = dd;
@@ -279,7 +281,7 @@ for ns = 1:model.Nsnr
     
     
     
-end;
+end
 
 
 % mname = ['models/SGreenland/histplots/hist_sample_',str,'.gif'];

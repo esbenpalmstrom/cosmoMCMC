@@ -21,8 +21,11 @@ Consider calculating cosmogenic nuclide memory, and then using that memory
 limit as timing to calculate total erosion. Wait until having a meeting
 with MFK regarding this?
 %}
-close all;
-
+clear; close all;
+addpath Functions/export_fig
+addpath Functions/cbrew/cbrew2/colorspace/colorspace
+addpath Functions/cbrew2/colorspace/colorspace
+addpath Functions/violinplot
 load fsamples.mat
 
 %path variables for the different inversions. Remember to check if youre
@@ -39,8 +42,9 @@ ypos = linspace(0.05,0.95,length(paths));
 
 for i = 1:length(fsamples.IDs)
     
-    figure()
-    set(gcf,'Name','model frequencies');
+    fig = figure();
+    fig.Position = [100 100 1200 600];
+    
     
     for j = 1:length(paths)
         
@@ -53,6 +57,7 @@ for i = 1:length(fsamples.IDs)
         
         path = [paths{j} fsamples.IDs{i} '.mat'];
         load(path);
+        set(gcf,'Name',['model frequencies ' model.data{1}.name]);
         
         
         uval = [];
@@ -63,7 +68,7 @@ for i = 1:length(fsamples.IDs)
             end
         end
         
-        d18OT = uval(1,:);
+        d18OT(:,j) = uval(1,:);
         T1 = uval(2,:);
         z1 = uval(3,:);
         dT2 = uval(4,:);
@@ -80,25 +85,13 @@ for i = 1:length(fsamples.IDs)
         z4 = z3 + (model.age - T3).*E4;
         
         
-        %erosion at 1 ma
-%         eroeins = zeros(1,length(T4));
-%         for nnmod = 1:length(uval)
-%             %interpolate erosion at 1 ma. for all models.
-%             eroeins(nnmod) = interp1([0,T1(nnmod),T2(nnmod),T3(nnmod),T4(nnmod)],[0,z1(nnmod),z2(nnmod),z3(nnmod),z4(nnmod)],1);
-%             
-% %             if eroeins(nnmod) > 20 %anything more than 20 m erosion is gonna be outside the xlim anyways
-% %                 eroeins(nnmod) = NaN;
-% %             end
-%         end
-        
         
         load([paths{j} 'param_stats/' fsamples.IDs{i} 'Syn_stats.mat']);
         
         
-        xpos = linspace(0,20,100); %frequency boxes and position of patches
+        xpos = linspace(0,20,256); %frequency boxes and position of patches
         f = histc(eroeins,xpos); %count erosion into boxes
         normf = f./sum(f); %normalize to get frequency
-        
         ywidth = 0.03; %width of frequency bars
         
         %make boxes with frequency color
@@ -110,14 +103,16 @@ for i = 1:length(fsamples.IDs)
             end
         end
         
-        colorbar
+        colorbar('southoutside')
         
-        textoffset = 3;
-
+        textoffset = 5;
+        
         if model.Nnc == 2 && ~isfield(model,'synpmval')
             text((xpos(1)-textoffset),ypos(j),['Real BeAl' num2str(model.data{1}.depths','% 5.1f')])
+            labeltext{j} = (['Real BeAl' num2str(model.data{1}.depths','% 5.1f')]);
         elseif model.Nnc == 1 && ~isfield(model,'synpmval')
             text((xpos(1)-textoffset),ypos(j),['Real Be' num2str(model.data{1}.depths','% 5.1f')])
+            labeltext{j} = (['Real BeAl' num2str(model.data{1}.depths','% 5.1f')]);
         end
         
         if  isfield(model,'synpmval') %add indicators at the synthetic model used.
@@ -132,7 +127,7 @@ for i = 1:length(fsamples.IDs)
             synz4 = synz3 + (model.age - synT3).*10.^model.synpmval(8);
             
             synero = interp1([0,synT1,synT2,synT3,synT4],[0,synz1,synz2,synz3,synz4],1);
-            line([synero synero],[(ypos(j)-ywidth-0.02) (ypos(j)+ywidth+0.02)],'Color','red','LineWidth',1.5)
+            line([synero synero],[(ypos(j)-ywidth-0.03) (ypos(j)+ywidth+0.03)],'Color','red','LineWidth',1.0,'LineStyle','--')
             
             if model.Nnc == 2
                 text((xpos(1)-textoffset),ypos(j),['BeAl' num2str(model.data{1}.depths','% 5.1f')])
@@ -146,10 +141,13 @@ for i = 1:length(fsamples.IDs)
         
         %make plot of d18Ot distribution
         subplot(1,2,2)
+        box on;
         xlabel('d18O threshold value')
         set(gca,'YTickLabel',[]);
+        grid on;
+        colorbar('southoutside')
         
-        xpos = linspace(3.5,5,100); %frequency boxes and position of patches
+        xpos = linspace(3.5,5,256); %frequency boxes and position of patches
         f = histc(d18OT,xpos); %count erosion into boxes
         normf = f./sum(f); %normalize to get frequency
         
@@ -164,14 +162,30 @@ for i = 1:length(fsamples.IDs)
         
         if isfield(model,'synpmval')
             synd18 = model.synpmval(1);
-            line([synd18 synd18],[(ypos(j)-ywidth-0.02) (ypos(j)+ywidth+0.02)],'Color','red','LineWidth',1.5)
+            line([synd18 synd18],[(ypos(j)-ywidth-0.03) (ypos(j)+ywidth+0.02)],'Color','red','LineWidth',1.0,'LineStyle','--')
         end
-        
+    
         
         
     end
-    sgtitle((model.data{1}.name))
-
+    %subplot(1,2,2)
+    %box on; grid on;
+    %violinplot(d18OT);
+    
+    sgtitle((model.data{1}.name),'Interpreter','none')
+    set(gcf,'color','white')
+    
+    %cmap = cbrewer2('Spectral');
+    %colormap(flipud(cmap))
+    
+    
+    section = 'discussion';
+    figurename = ['constraintImprovement_' model.data{1}.name];
+    
+    %export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' section '/' figurename],'-jpg','-r300');
     
 end
-distFig
+
+%figlist=get(groot,'Children');
+
+%distFig

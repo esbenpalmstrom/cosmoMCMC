@@ -6,7 +6,7 @@ load fsamples.mat
 %(maybe max 500k proposed models).
 snr = 1; %number of samples from same excel file.
 numdp = 4; %including glaciation time and depth, right now only made for 3 or 4
-CNprod = 'new'; %'new' or 'old', remember to correct the data file used.
+CNprod = 'old'; %'new' or 'old', remember to correct the data file used.
 
 nwalkers = 16; %number of walkers
 nmodmax = 1000e4; %max number of proposed models
@@ -23,7 +23,8 @@ Tdglac = 0.015; %Boundaries are quite wide for Gausta data, see the bedrock file
 
 acctarget = 0.30; %default: 0.3
 
-model_d18O = 1; %Use d18O threshold from peltier models or not. 1 will use, 0 will not.
+model_d18O = 1; %0: No peltier d18Ot, 1: d18Ot from Peltier, 2: No Tdg, only d18O freely chosen.
+
 
 starttime = datetime('now');
 starttimer = now;
@@ -47,7 +48,7 @@ for i = 1:1 %length(fsamples.IDs)
     
     sampleID = 'gausta_data_2';
     %samplepath = ['./data/Gausta/' sampleID '.mat'];
-    samplepath = ['./data/gausta_v2/' sampleID '.mat']; %Gausta or gausta_v2
+    samplepath = ['./data/Gausta/' sampleID '.mat']; %Gausta or gausta_v2
     
     %sampleID = fsamples.IDs{i};
     %samplepath = ['./data/FS/' sampleID '.mat'];
