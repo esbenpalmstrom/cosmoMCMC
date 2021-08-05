@@ -4,6 +4,10 @@
 %muon capture
 clear; close all;
 
+set(groot','defaulttextinterpreter','latex');
+set(groot, 'defaultAxesTickLabelInterpreter','latex');
+set(groot, 'defaultLegendInterpreter','latex');
+
 addpath Functions
 
 %create depth profile
@@ -47,19 +51,14 @@ P26m = P26nmcd + P26fmd;
 P10spald = P10spal*exp((-CNprop.rho*100*d)/CNprop.Lspal);
 P26spald = P26spal*exp((-CNprop.rho*100*d)/CNprop.Lspal);
 
+
+% ************* figure 1 ***************
 figure; hold on; grid on; box on;
-plot(P10m,d,'-.k');
+
+plot(P10m,d,'--b'); %old muon production rate
+P10tot = P10m + P10spald;
+plot(P10tot,d,'-b'); %old total production rate
 %plot(P26m,d,'-.r');
-
-% format bank
-% format compact
-% disp('old')
-% Lspal
-% P10Lfm
-% P10Lnmc
-% P26Lfm
-% P26Lnmc
-
 
 %new production
 load data/gausta_v2/gausta_data_2.mat
@@ -103,13 +102,13 @@ P26spald = P26spal*exp(-rho*100*d/Lspal);
 P10tot = P10spald + P10m;
 P26tot = P26spald + P26m;
 
-plot(P10m,d,'--k');
-%plot(P26m,d,'--r');
-
-plot(P10spald,d,':k');
+plot(P10spald,d,'-r','LineWidth',1.2); % spallation CNP
 %plot(P26spald,d,':r');
 
-plot(P10tot,d,'-k')
+plot(P10m,d,'--k','LineWidth',1.2); % new muon CNP
+%plot(P26m,d,'--r');
+
+plot(P10tot,d,'-k','LineWidth',1.2) % new total CNP
 %plot(P26tot,d,'-r')
 
 
@@ -118,44 +117,69 @@ xlim([10e-4 10e2])
 %ylim([0 500]);
 set(gca,'Ydir','reverse')
 set(gca, 'XScale', 'log')
-legend('old muon Be10 production','new muon Be10 production','spallation Be10 production','new total Be10 production')
+legend('high muogenic Beryllium-10 production',...
+'high total Beryllium-10 production',...
+'spallation Be10 production',...
+'low muogenic Be10 production','low total Beryllium-10 production','Location','northwest')
 %legend('old Be10 P','old Al26 P','new Be10 P','new Al26 P','Be10 spallation','Al26 spallation','total Be10 production','total Al26 production');
 ylabel('depth [m]')
-xlabel('production rate [atom/g/yr]')
-
+xlabel('production rate [atoms/g/yr]')
+xlim([10e-4 10e1])
+set(gca,'FontSize',16);
 set(gcf,'color','white')
-figurename = 'CosmoProdRates_Depth';
-export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' figurename],'-jpg','-r300');
+set(gcf,'Position',[100 100 1200 600]);
+figurename = 'CNP_newvsold';
+%export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' figurename],'-jpg','-r300');
 
-
+% ************* figure 2 ***************
 figure; hold on; grid on; box on;
-plot(P10tot,d,'k')
-plot(P26tot,d,'g')
+plot(P10tot,d,'k','LineWidth',1.2)
+plot(P26tot,d,'g','LineWidth',1.2)
 xlim([10e-4 10e2])
 %ylim([0 500]);
 set(gca,'Ydir','reverse')
 set(gca, 'XScale', 'log')
 ylabel('depth below surface [m]')
 xlabel('production rate [atoms/g/yr]')
-legend('Total Beryllium-10 production rate','Total Aluminium-26 production rate','Location','northwest')
+legend('Total Beryllium-10 production','Total Aluminium-26 production','Location','northwest')
 
+set(gca,'FontSize',16);
 set(gcf,'color','white')
+set(gcf,'Position',[100 100 800 700]);
 figurename = 'CNP_tot';
-export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' figurename],'-jpg','-r300');
+%export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' figurename],'-jpg','-r300');
 
 
+% ************* figure 3 ***************
 figure; hold on; grid on; box on;
-plot(P10tot,d,'-k')
-plot(P10spald,d,':k')
-plot(P10m,d,'--k')
+plot(P10tot,d,'-k','LineWidth',1.2)
+plot(P10spald,d,':k','LineWidth',1.2)
+plot(P10m,d,'--k','LineWidth',1.2)
 
 set(gca,'Ydir','reverse')
 set(gca, 'XScale', 'log')
 ylabel('depth below surface [m]')
 xlabel('production rate [atoms/g/yr]')
-legend('Total Beryllium-10 production rate','Beryllium-10 spallation production rate','Beryllium-10 muon production rate','Location','northwest')
+legend('Total Beryllium-10 production','Beryllium-10 spallation production','Beryllium-10 muon production','Location','northwest')
 xlim([10e-4 10e1])
 ylim([0 10])
+set(gca,'FontSize',16);
 set(gcf,'color','white')
-figurename = 'CNP_spalvsmuon';
-export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' figurename],'-jpg','-r300');
+set(gcf,'Position',[100 100 1200 600]);
+
+%figurename = 'defense_CNP_spalvsmuon';
+%export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' figurename],'-jpg','-r300');
+
+
+% % ******** figure 4, for defense presentation ********
+% figure; hold on;
+% plot(P10spald,d,'b','LineWidth',1.2)
+% plot(P10m,d,'r','LineWidth',1.2)
+% set(gca,'Ydir','reverse')
+% ylim([0 2])
+% set(gcf,'color','white')
+% set(gcf,'Position',[100 100 500 700]);
+% set(gca,'XTick',[]);
+% set(gca,'YTick',[]);
+% legend('Spallation','Muogenic','Location','southeast')
+% set(gca,'FontSize',16);

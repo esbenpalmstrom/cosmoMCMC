@@ -1,4 +1,4 @@
-function bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp,CNprod,model_d18O)
+function bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp,CNprod,overwrite_tdg)
 %MCMC model modified from bedrockMCv7 (DLE) by JLA, June 2019
 %
 % vJ2 updated Feb. 2020 by JLA includes the possibility of extra data points at depth
@@ -70,7 +70,7 @@ model.tc = 1.0; %time constraint for each data point except Tdg, Myr.
 % model.Mmp = 2; %number of generic model parameters
 model.mp{1}.name = ['d18O threshold'];
 model.mp{1}.vmin = 3.5;
-model.mp{1}.vmax = 5.0; %changed from 5.0 to 5.3
+model.mp{1}.vmax = 5.3; %changed from 5.0 to 5.3
 
 
 model.mp{2}.name = ['Time of deglaciation (Tdg)']; % use uncertainty of +/- 1ka
@@ -424,7 +424,7 @@ for nw = 1:model.Nwalk
         end
         
         %********** Forward model *****************
-        [gmp,time,burial] = forward_bedrock_vE2(up,model,CNprop,numdp,model_d18O); %gmp: predicted data vector.
+        [gmp,time,burial] = forward_bedrock_vE2(up,model,CNprop,numdp,overwrite_tdg); %gmp: predicted data vector.
         
         gmp = gmp(1:model.Nds);
         

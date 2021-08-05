@@ -12,18 +12,19 @@ Add plots of exhumation based on real data inversion where the different
 proposed synthetic models are displayed. Mark out the chosen model.
 Consider displaying only for one walker, or for all walkers.
 %}
-
-%set to 'on' if you want
-exhumationplots = 'on'
-frequencyplots = 'on'
-
-
 clear; close all;
+%set to 'on' if you want
+exhumationplots = 'on';
+frequencyplots = 'on';
+set(0, 'DefaultTextInterpreter', 'none')
+
+
+
 load fsamples.mat
 addpath Functions
 cd models/FSbase_12_Dec_2020_13_04_14/ %pick models!!!
 files = dir('*.mat');
-nsamples = length(files); %number of samples in files
+nsamples = 6; %number of samples in files
 
 nsamp = 100; %number of points to use for mean
 
@@ -36,10 +37,18 @@ walksamp = [
     2
     ]; %define which walker to use for sample parameters
 
+exhumfig = figure();
+numsubplot = 1;
+
+sitenames = {'Pyha-Nättanen','lol','Gaustatoppen','Andøya','Naakakarhakka','Karmøy'};
+
 
 for ff = 1:nsamples
     load (files(ff).name);
     
+    if ff == 2
+        continue
+    end
     
     figure;
     
@@ -133,7 +142,7 @@ for ff = 1:nsamples
         plot(walker_totmean(i),fg,'ko','MarkerSize',15,'LineWidth',5)
         ylims = get(gca,'ylim');
         
-        
+        keyboard
         if isfield(model,'synpmval') == 1
             plot([model.synpmval(i),model.synpmval(i)],[ylims(1),ylims(2)],'r-','LineWidth',2); %plot synthetic pm values
         end
@@ -146,8 +155,10 @@ for ff = 1:nsamples
     end
     
     
+    
     %make exhumation plot with proposed synthetic models displayed.
-    figure()
+    %figure()
+    set(0,'CurrentFigure',exhumfig);
     
     %plot margins
     Maxz = model.z0;
@@ -162,6 +173,7 @@ for ff = 1:nsamples
     map(1,:) = [1,1,1];
     colormap(map);
     for ns = 1:model.Nsnr
+        sbplt = subplot(3,2,numsubplot);
         
         hold on; box on; set(gca,'layer','top');
         
@@ -175,7 +187,8 @@ for ff = 1:nsamples
         
         histgrid = zeros(size(tbin));
         dzi = zint(2)-zint(1);
-        title(model.data{ns}.name);
+        %title(model.data{ns}.site);
+        %title(sitenames{ff});
         
         n0 = model.Mmp + (ns-1)*model.Nsmp;
         
@@ -222,13 +235,13 @@ for ff = 1:nsamples
         %plot best models for each walker.
         for nw = 1:model.Nwalk
             
-            for k = 1:nsamp %plot a cloud of "good" models
-                up = min_u{nw}(:,k);
-                syn_exhu(up);
-            end
+            %             for k = 1:nsamp %plot a cloud of "good" models
+            %                 up = min_u{nw}(:,k);
+            %                 syn_exhu(up);
+            %             end
             
-            up = walkerModels(:,nw);
-            syn_exhu(up); %plot the best model from each walker.
+            %             up = walkerModels(:,nw);
+            %             syn_exhu(up); %plot the best model from each walker.
             
             
         end
@@ -238,9 +251,100 @@ for ff = 1:nsamples
         
         ylim([0 20])
     end
+    keyboard
+    
+    
+    
+    
+    
+    %draw box for d18O curve
+    sbplt.Position(4) = sbplt.Position(4)-0.05;
+    
+    ax = axes;
+    hold on; box on;
+    ax.Position = sbplt.Position;
+    ax.Position(2) = sbplt.Position(2)+sbplt.Position(4)+0.01;
+    ax.Position(4) = 0.5*sbplt.Position(4);
+    
+    ax.XTick = sbplt.XTick;
+    ax.XTickLabel = '';
+    
+    %*******load and draw the d18O curve*******
+    cg = [.6,.6,.9];
+    cig = [.6,.9,.6];
+
+    load d18Ocurves.mat
+    tta = Age*1e-3;
+    dd = d18O_10ky;
+    uval = [];
+    for nw = 1:model.Nwalk
+        I = find(model.walker{nw}.status == 1);
+        if (~isempty(I))
+            uval = [uval(:);model.walker{nw}.up(1,I)'];
+        end
+    end
+    
+    if (~isempty(uval))
+        [f,xi] = ksdensity(uval);
+    end
+    fint = cumsum(f);
+    fint = fint/max(fint);
+    ddg = dd;
+    ddig = dd;
+    I = find(dd < xi(1)); ddig(I) = xi(1);
+    patch([tta(:);flipud(tta(:))],[dd(:);flipud(ddig(:))],cig,'linestyle','none');
+    Nxi = length(xi);
+    on = ones(size(dd));
+    for i=1:Nxi-1
+        top = xi(i)*on;
+        base = xi(i+1)*on;
+        I = find((dd > xi(i))&(dd < xi(i+1))); top(I) = dd(I);
+        I = find(dd > xi(i+1)); top(I) = xi(i+1);
+        cf = fint(i);
+        col = cf*[1,1,1]+(1-cf)*cig;
+        patch([tta(:);flipud(tta(:))],[top(:);flipud(base(:))],col,'linestyle','none');
+        
+        
+        top = xi(i)*on;
+        base = xi(i+1)*on;
+        I = find((dd < xi(i+1))&(dd > xi(i))); base(I) = dd(I);
+        I = find(dd < xi(i)); base(I) = xi(i);
+        cf = fint(i);
+        col = (1-cf)*[1,1,1]+cf*cg;
+        patch([tta(:);flipud(tta(:))],[top(:);flipud(base(:))],col,'linestyle','none');
+    end
+    
+    ddg = dd;
+    ddig = dd;
+    I = find(dd > xi(end)); ddig(I) = xi(end);
+    patch([tta(:);flipud(tta(:))],[dd(:);flipud(ddig(:))],cg,'linestyle','none');
+    
+    l2 = line(tta,dd,'color','k');
+    keyboard
+    fval = 0.9*f/max(f);
+    patch([fval(:);zeros(size(fval(:)))],[xi(:);flipud(xi(:))],cg,'linestyle','none');
+    line(fval,xi,'color','k');
+
+    
+    
+    
+    title(sitenames{ff});
+    
+    
+    
+    
+    
+    
+    numsubplot = numsubplot +1;
+    
     
 end
+set(gcf,'color','white')
+set(gcf,'Position',[100 100 500 750]);
+
+figurename = 'SyntheticModels';
+export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' figurename],'-jpg','-r300',exhumfig);
+
 
 cd ../..
 %save('parametermeans.mat','parameterMeans')
-distFig

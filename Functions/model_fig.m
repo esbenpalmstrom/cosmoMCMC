@@ -1,4 +1,12 @@
 function model_fig(doc,zp,tp)
+%create model figure showing an exhumation model with points and lines and
+%a d18Othreshold line in a d18O plot.
+close all;
+if nargin == 0
+    doc = 4.0;%d18O threshold.
+    zp = [0.0,0.2,0.9,6.0,12.0,25,]; %depth points
+    tp = [0.0,16,300,1500,1900,3500]; %time points
+end
 
 set(groot','defaulttextinterpreter','latex');
 set(groot, 'defaultAxesTickLabelInterpreter','latex'); 
@@ -11,30 +19,30 @@ set(gcf,'color',[1,1,1]);
 set(gca,'position',[0,0,1,1],'visible','off');
 ax0 = gca;
 set(ax0,'xlim',[0,1],'ylim',[0,1]);
-text(0.5,0.035,'Time before present (kyr)','horizontalalignment','center','fontsize',24);
+text(0.5,0.035,'Time before present [kyr]','horizontalalignment','center','fontsize',24);
 text(0.05,0.825,'$\delta_{18}$O','rotation',90,'horizontalalignment','center','fontsize',24);
-text(0.04,0.35,'Depth below surface (m)','rotation',90,'horizontalalignment','center','verticalalignment','middle','fontsize',24);
+text(0.04,0.35,'Depth below surface [m]','rotation',90,'horizontalalignment','center','verticalalignment','middle','fontsize',24);
 %text(0.075,0.1,'20','horizontalalignment','right','verticalalignment','middle','fontsize',24);
 %text(0.075,0.6,'0','horizontalalignment','right','verticalalignment','middle','fontsize',24);
 
-ax1 = axes('position',[0.1,0.675,0.75,0.28]);
-hold on; box on; %grid on;
+ax1 = axes('position',[0.1,0.675,0.75,0.28]); %d18O plot
+hold on; box on; grid on;
 set(gca,'ydir','reverse','layer','top');
 set(gca,'xtick',[0:1000:3000],'xticklabel',[]);
 set(gca,'ytick',[3:5]);
 set(gca,'fontsize',24);
 axis([0,3000,3,5.3]);
 
-ax2 = axes('position',[0.1,0.1,0.75,0.5]);
-hold on; box on; %grid on;
+ax2 = axes('position',[0.1,0.1,0.75,0.5]); %large exhumation plot
+hold on; box on; grid on;
 set(gca,'ydir','reverse');
 set(gca,'xtick',[0:1000:3000]);
 set(gca,'ytick',[0:5:20]);
 set(gca,'fontsize',24);
 axis([0,3000,0,20]);
 
-ax3 = axes('position',[0.20,0.20,0.25,0.2]);
-hold on; box on; %grid on;
+ax3 = axes('position',[0.20,0.20,0.25,0.2]); %small exhumation plot inside exhumation plot
+hold on; box on; grid on;
 set(gca,'ydir','reverse');
 set(gca,'xtick',[0:10:50]);
 set(gca,'ytick',[0:0.2:0.5]);
@@ -48,7 +56,7 @@ cig = [.6,.9,.6];
 axes(ax1);
 load d18Ocurves.mat
 tta = Age*1e-3;
-dd = d18O_6ky;
+dd = d18O_10ky;
 
 %critical d18O
 % doc = 3.9;
@@ -155,11 +163,11 @@ for j=2:length(tp)-1
     ttp(j-1)=text(xtp(j-1),ytp(j-1),tlabel{j-1},'fontsize',24,'horizontalalignment','center');
     ttz(j-1)=text(xzp(j-1),yzp(j-1),zlabel{j-1},'fontsize',24,'verticalalignment','middle');
 end
-ttO=text(xOt,yOt,'$\delta_{18}$O$_c$','fontsize',24,'verticalalignment','middle');
+ttO=text(xOt,yOt,'$\delta_{18}$O$_t$','fontsize',24,'verticalalignment','middle');
 
-text(0.325,0.15,'Time before present (kyr)','horizontalalignment','center','fontsize',20);
-text(0.14,0.3,'Depth below surface (m)','rotation',90,'horizontalalignment','center','verticalalignment','middle','fontsize',20);
-text(0.6,0.25,'$E_{0}$','fontsize',24,'verticalalignment','middle');
+text(0.325,0.15,'Time before present [kyr]','horizontalalignment','center','fontsize',16);
+text(0.14,0.3,'Depth below surface [m]','rotation',90,'horizontalalignment','center','verticalalignment','middle','fontsize',16);
+text(0.72,0.20,'$E_{0}$','fontsize',24,'verticalalignment','middle');
 
 
 print -depsc model_setup.eps;
@@ -168,3 +176,6 @@ print -depsc model_setup.eps;
 set(groot','defaulttextinterpreter','default');
 set(groot, 'defaultAxesTickLabelInterpreter','default'); 
 set(groot, 'defaultLegendInterpreter','default');
+
+figurename = 'ParameterExample';
+export_fig(['/Users/esben/OneDrive - Aarhus Universitet/Speciale/skriv/latex/figures/' figurename],'-jpg','-r300');

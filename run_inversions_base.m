@@ -6,7 +6,7 @@ load fsamples.mat
 %(maybe max 500k proposed models).
 snr = 1; %number of samples from same excel file.
 numdp = 4; %including glaciation time and depth, right now only made for 3 or 4
-CNprod = 'old'; %'new' or 'old', remember to correct the data file used.
+CNprod = 'new'; %'new' or 'old', remember to correct the data file used.
 
 nwalkers = 16; %number of walkers
 nmodmax = 1000e4; %max number of proposed models
@@ -23,7 +23,8 @@ Tdglac = 0.015; %Boundaries are quite wide for Gausta data, see the bedrock file
 
 acctarget = 0.30; %default: 0.3
 
-model_d18O = 1; %0: No peltier d18Ot, 1: d18Ot from Peltier, 2: No Tdg, only d18O freely chosen.
+%model_d18O = 0; %0: No peltier d18Ot, 1: d18Ot from Peltier, 2: No Tdg, only d18O freely chosen.
+overwrite_tdg = 1;% can only be set to 1 if model_d18O is 0. Will overwrite the exposure times from the Eemian to present completely with the Gausta exposure times from Peltier.
 
 
 starttime = datetime('now');
@@ -46,9 +47,14 @@ end
     
 for i = 1:1 %length(fsamples.IDs)
     
+    
     sampleID = 'gausta_data_2';
     %samplepath = ['./data/Gausta/' sampleID '.mat'];
-    samplepath = ['./data/Gausta/' sampleID '.mat']; %Gausta or gausta_v2
+    if CNprod == 'new'
+        samplepath = ['./data/gausta_v2/' sampleID '.mat']; %Gausta for old or gausta_v2 for new.
+    elseif CNprod == 'old'
+        samplepath = ['./data/Gausta/' sampleID '.mat']; %Gausta for old or gausta_v2 for new.
+    end
     
     %sampleID = fsamples.IDs{i};
     %samplepath = ['./data/FS/' sampleID '.mat'];
@@ -56,7 +62,7 @@ for i = 1:1 %length(fsamples.IDs)
     savepath = ['models/' foldername '/' sampleID '.mat'];
     reportpath = ['models/' foldername '/reports/' sampleID '/'];
     mkdir (reportpath);
-    bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp,CNprod,model_d18O) %use vE1 or E2
+    bedrockMCvJ2_E2(snr,nwalkers,nmodmax,nmodacc,samplepath,lburnin,savepath,sampleID,Tdglac,k_meanlength,acctarget,numdp,CNprod,overwrite_tdg) %use vE1 or E2
     makereportEv2(snr,savepath,reportpath,sampleID,numdp)
 end
 

@@ -7,18 +7,21 @@ used if only 'up' parameter is passed to the function
 
 %colors
 if nargin == 1
-    cg = [.6,.6,.9];
-    cig = [.6,.9,.6];
+    cg = [.6,.6,.9]; %line color
+    cig = [.6,.9,.6]; %point color
 end
+
+
+
 xlim = get(gca,'xlim');
 
 %depth points
 zp=[0.0,up(3),up(3)+10^(up(5)),up(3)+10^(up(5))+10^(up(7)),up(3)+10^(up(5))+10^(up(7))+(3 - up(2)+up(4)+up(6))*10^(up(8))];
-tp=[0.0,up(2),(up(2)+up(4)),(up(2)+up(4)+up(6)),3];
+tp=[0.0,up(2),(up(2)+up(4)),(up(2)+up(4)+up(6)),3].*1e3;
 % zend = zp(end) + (xlim(2)-tp(end))*(zp(end)-zp(end-1))/(tp(end)-tp(end-1));
 
 %draw line segment
-line(tp,zp,'color',cg,'linewidth',4);
+line(tp,zp,'color',cg,'linewidth',4,'LineStyle','--');
         
 %draw points
 mz = 15;
